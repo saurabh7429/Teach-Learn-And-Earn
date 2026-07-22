@@ -1,0 +1,1 @@
+a place where student can earn while teaching 
