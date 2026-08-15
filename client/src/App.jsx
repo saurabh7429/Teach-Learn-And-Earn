@@ -16,26 +16,32 @@ function ProtectedRoute({ children }) {
   return user ? children : <Navigate to="/login" replace />;
 }
 
-function PublicRoute({ children }) {
+function PublicOnlyRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) return <div className="splash-loader"><div className="spinner" /></div>;
   return !user ? children : <Navigate to="/" replace />;
 }
 
 function AppRoutes() {
-  const { user } = useAuth();
   return (
     <>
-      {user && <Navbar />}
+      <Navbar />
       <Routes>
-        <Route path="/login"    element={<PublicRoute><Login /></PublicRoute>} />
-        <Route path="/signup"   element={<PublicRoute><Signup /></PublicRoute>} />
-        <Route path="/"         element={<ProtectedRoute><Home /></ProtectedRoute>} />
+        {/* Public Landing & Home */}
+        <Route path="/"         element={<Home />} />
+
+        {/* Auth routes */}
+        <Route path="/login"    element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
+        <Route path="/signup"   element={<PublicOnlyRoute><Signup /></PublicOnlyRoute>} />
+
+        {/* Protected workspace routes */}
         <Route path="/learn"    element={<ProtectedRoute><Learn /></ProtectedRoute>} />
         <Route path="/teach"    element={<ProtectedRoute><Teach /></ProtectedRoute>} />
         <Route path="/requests" element={<ProtectedRoute><Requests /></ProtectedRoute>} />
         <Route path="/progress" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
         <Route path="/chat/:id" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+        
+        {/* Catch-all redirect to Home */}
         <Route path="*"         element={<Navigate to="/" replace />} />
       </Routes>
     </>

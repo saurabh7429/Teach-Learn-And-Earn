@@ -27,15 +27,29 @@ app.use((err, req, res, next) => {
 });
 
 // ── Connect to MongoDB ──
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('✅ MongoDB connected');
-    app.listen(process.env.PORT || 5000, () =>
-      console.log(`🚀 Server running on http://localhost:${process.env.PORT || 5000}`)
-    );
-  })
-  .catch((err) => {
-    console.error('❌ MongoDB connection error:', err.message);
-    process.exit(1);
-  });
+const connectDB = async () => {
+  const primaryURI = process.env.MONGO_URI;
+  const fallbackURI = process.env.MONGO_URI_LOCAL || 'mongodb://localhost:27017/tledb';
+
+  try {
+    console.log('Connecting to MongoDB Atlas...');
+    await mongoose.connect(primaryURI, { serverSelectionTimeoutMS: 5000 });
+    console.log('✅ MongoDB Atlas connected successfully');
+  } catch (err) {
+    console.warn('⚠️ MongoDB Atlas connection error:', err.message);
+    console.log('🔄 Falling back to local MongoDB:', fallbackURI);
+    try {
+      await mongoose.connect(fallbackURI);
+      console.log('✅ Local MongoDB connected successfully');
+    } catch (localErr) {
+      console.error('❌ Local MongoDB connection error:', localErr.message);
+      process.exit(1);
+    }
+  }
+
+  app.listen(process.env.PORT || 5000, () =>
+    console.log(`🚀 Server running on http://localhost:${process.env.PORT || 5000}`)
+  );
+};
+
+connectDB();
