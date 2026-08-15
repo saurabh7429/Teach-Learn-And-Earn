@@ -1,0 +1,9 @@
+{
+  "watch": ["*.js", "models/", "routes/", "middleware/"],
+  "ext": "js,json",
+  "ignore": ["node_modules/"],
+  "env": {
+    "DOTENVX_QUIET": "true",
+    "DOTENVX_OVERRIDE": "false"
+  }
+}
