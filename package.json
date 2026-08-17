@@ -6,10 +6,9 @@
     "server": "cd server && npm run dev",
     "client": "cd client && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "test": "playwright test"
+    "test": "node test-app.js"
   },
   "devDependencies": {
-    "@playwright/test": "^1.62.1",
     "concurrently": "^9.1.2"
   }
 }
