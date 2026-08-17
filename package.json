@@ -5,9 +5,11 @@
   "scripts": {
     "server": "cd server && npm run dev",
     "client": "cd client && npm run dev",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "test": "playwright test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "concurrently": "^9.1.2"
   }
 }
