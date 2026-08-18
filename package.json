@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "Peer-to-peer skill exchange platform — MERN Stack",
   "scripts": {
-    "server": "cd server && npm run dev",
-    "client": "cd client && npm run dev",
+    "server": "npm --prefix server run dev",
+    "client": "npm --prefix client run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "start": "npm run dev",
     "test": "node test-app.js"
   },
   "devDependencies": {

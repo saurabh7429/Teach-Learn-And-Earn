@@ -33,14 +33,14 @@ export default function Home() {
       <div className="page-body page-enter">
         <div className="container">
           {/* Hero Banner */}
-          <div className="hero-section" style={{ textAlign: 'center', padding: '60px 0 40px' }}>
-            <div className="badge badge-purple" style={{ marginBottom: 16, fontSize: 13, padding: '6px 16px' }}>
+          <div className="hero-section">
+            <div className="badge badge-indigo" style={{ marginBottom: 20 }}>
               🚀 Peer-to-Peer Skill Exchange Platform
             </div>
-            <h1 className="hero-greeting" style={{ fontSize: 44, fontWeight: 800, marginBottom: 16 }}>
-              Teach, Learn &amp; <span className="gradient-text">Earn</span>
+            <h1 className="hero-greeting">
+              Teach, Learn &amp; Earn
             </h1>
-            <p className="hero-subtitle" style={{ fontSize: 18, maxWidth: 640, margin: '0 auto 36px' }}>
+            <p className="hero-subtitle">
               Learn what you love. Teach what you know.<br />
               One single account allows you to learn new skills and share your expertise simultaneously.
             </p>
@@ -57,18 +57,17 @@ export default function Home() {
 
           {/* Core Action Cards (Learn vs Teach) */}
           <div className="dashboard-section">
-            <div style={{ textAlign: 'center', marginBottom: 24 }}>
-              <h2 className="section-title" style={{ fontSize: 24, marginBottom: 6 }}>
+            <div style={{ textAlign: 'center', marginBottom: 32 }}>
+              <h2 className="section-title" style={{ fontSize: 24, marginBottom: 8 }}>
                 What do you want to do today?
               </h2>
-              <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>
+              <p style={{ color: 'var(--text-secondary)', fontSize: 15 }}>
                 Choose your path or do both with a single account!
               </p>
             </div>
 
             <div className="action-cards-grid">
-              <div className="action-card action-card-learn" onClick={() => navigate('/signup')}>
-                <div className="action-deco" />
+              <div className="action-card" onClick={() => navigate('/signup')}>
                 <span className="action-card-icon">📚</span>
                 <h2 className="action-card-title">LEARN</h2>
                 <p className="action-card-desc">
@@ -77,27 +76,26 @@ export default function Home() {
                 <button className="btn btn-primary btn-sm">Explore Skills →</button>
               </div>
 
-              <div className="action-card action-card-teach" onClick={() => navigate('/signup')}>
-                <div className="action-deco" />
+              <div className="action-card" onClick={() => navigate('/signup')}>
                 <span className="action-card-icon">🎓</span>
                 <h2 className="action-card-title">TEACH</h2>
                 <p className="action-card-desc">
                   Share your knowledge with others. Pass the Teach Devta assessment to verify your skills and start teaching active learners.
                 </p>
-                <button className="btn btn-sm" style={{ background: 'linear-gradient(135deg,#10B981,#059669)', color: 'white' }}>
-                  Teaching →
+                <button className="btn btn-secondary btn-sm">
+                  Start Teaching →
                 </button>
               </div>
             </div>
           </div>
 
           {/* Teach Devta AI Showcase */}
-          <div className="dashboard-section" style={{ marginTop: 40 }}>
-            <div className="teach-devta-widget" style={{ padding: 36 }}>
-              <div className="teach-devta-avatar" style={{ width: 64, height: 64, fontSize: 32 }}>🤖</div>
+          <div className="dashboard-section">
+            <div className="teach-devta-widget">
+              <div className="teach-devta-avatar">🤖</div>
               <div className="teach-devta-info">
-                <div className="teach-devta-name" style={{ fontSize: 20 }}>Teach Devta AI Engine</div>
-                <div className="teach-devta-desc" style={{ fontSize: 15, marginTop: 4, lineHeight: 1.6 }}>
+                <div className="teach-devta-name">Teach Devta AI Engine</div>
+                <div className="teach-devta-desc">
                   Our double-duty AI assistant acts as your <strong>Personal Learning Assistant</strong> when you learn,
                   and as a <strong>Skill Qualification Examiner</strong> to verify teachers before they teach!
                 </div>
@@ -109,23 +107,23 @@ export default function Home() {
           </div>
 
           {/* Popular Categories Preview */}
-          <div className="dashboard-section" style={{ marginTop: 48, marginBottom: 60 }}>
+          <div className="dashboard-section">
             <div className="section-header">
               <h2 className="section-title">Popular Skills Available</h2>
-              <span className="section-link" onClick={() => navigate('/signup')}>View All →</span>
+              <button className="btn btn-ghost btn-sm" onClick={() => navigate('/signup')}>View All →</button>
             </div>
-            <div className="teaching-skills-grid">
+            <div className="skills-grid">
               {[
                 { name: 'JavaScript', category: 'Web Development', students: 18 },
                 { name: 'C Programming', category: 'Systems & Code', students: 24 },
                 { name: 'React.js', category: 'Frontend UI', students: 15 },
                 { name: 'HTML & CSS', category: 'Web Design', students: 30 },
               ].map((s) => (
-                <div className="card skill-card" key={s.name} onClick={() => navigate('/signup')} style={{ cursor: 'pointer' }}>
-                  <div className="skill-card-name" style={{ fontSize: 16 }}>{s.name}</div>
-                  <div className="skill-students" style={{ marginTop: 4 }}>📌 {s.category}</div>
-                  <div style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className="badge badge-verified">✓ Verified</span>
+                <div className="card card-hover" key={s.name} onClick={() => navigate('/signup')} style={{ cursor: 'pointer' }}>
+                  <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 4 }}>{s.name}</div>
+                  <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>📌 {s.category}</div>
+                  <div style={{ marginTop: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className="badge badge-success">✓ Verified</span>
                     <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>👥 {s.students} learners</span>
                   </div>
                 </div>
@@ -149,19 +147,17 @@ export default function Home() {
           <p className="hero-subtitle">What would you like to do today?</p>
 
           <div className="action-cards-grid">
-            <div className="action-card action-card-learn" onClick={() => navigate('/learn')}>
-              <div className="action-deco" />
+            <div className="action-card" onClick={() => navigate('/learn')}>
               <span className="action-card-icon">📚</span>
               <h2 className="action-card-title">LEARN</h2>
               <p className="action-card-desc">Find teachers and learn new skills from real people.</p>
               <button className="btn btn-primary btn-sm">Explore Skills →</button>
             </div>
-            <div className="action-card action-card-teach" onClick={() => navigate('/teach')}>
-              <div className="action-deco" />
+            <div className="action-card" onClick={() => navigate('/teach')}>
               <span className="action-card-icon">🎓</span>
               <h2 className="action-card-title">TEACH</h2>
               <p className="action-card-desc">Share your knowledge and help others grow.</p>
-              <button className="btn btn-sm" style={{ background: 'linear-gradient(135deg,#10B981,#059669)', color: 'white' }}>
+              <button className="btn btn-secondary btn-sm">
                 Teaching →
               </button>
             </div>
@@ -173,32 +169,26 @@ export default function Home() {
           <div className="dashboard-section">
             <div className="section-header">
               <h2 className="section-title">Continue Learning</h2>
-              <span className="section-link" onClick={() => navigate('/learn')}>View All →</span>
+              <button className="btn btn-ghost btn-sm" onClick={() => navigate('/learn')}>View All →</button>
             </div>
             {activeRequests.map((req) => (
-              <div className="card" key={req._id} style={{ marginBottom: 12 }}>
-                <div className="card-body">
-                  <div className="learning-card-top">
-                    <div>
-                      <div className="learning-card-title">{req.skill || req.question}</div>
-                      <div className="learning-card-teacher">
-                        👤 Teacher: {req.selectedTeacher?.name ?? 'Assigned'}
-                      </div>
+              <div className="card" key={req._id} style={{ marginBottom: 16 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
+                  <div>
+                    <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 4 }}>{req.skill || req.question}</div>
+                    <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+                      👤 Teacher: {req.selectedTeacher?.name ?? 'Assigned'}
                     </div>
-                    <span className="badge badge-verified">Active</span>
                   </div>
-                  <div className="progress-bar-wrapper">
-                    <div className="progress-bar-label"><span>Progress</span><span>—</span></div>
-                    <div className="progress-bar-track"><div className="progress-bar-fill" style={{ width: '40%' }} /></div>
-                  </div>
-                  <div className="learning-card-actions">
-                    {myChats.find((c) => c.request === req._id) && (
-                      <button className="btn btn-primary btn-sm"
-                        onClick={() => navigate(`/chat/${myChats.find((c) => c.request === req._id)?._id}`)}>
-                        💬 Chat
-                      </button>
-                    )}
-                  </div>
+                  <span className="status-badge selected">Active</span>
+                </div>
+                <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end' }}>
+                  {myChats.find((c) => c.request === req._id) && (
+                    <button className="btn btn-primary btn-sm"
+                      onClick={() => navigate(`/chat/${myChats.find((c) => c.request === req._id)?._id}`)}>
+                      💬 Open Chat
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -209,24 +199,24 @@ export default function Home() {
         <div className="dashboard-section">
           <div className="section-header">
             <h2 className="section-title">Your Teaching</h2>
-            <span className="section-link" onClick={() => navigate('/teach')}>Manage →</span>
+            <button className="btn btn-ghost btn-sm" onClick={() => navigate('/teach')}>Manage →</button>
           </div>
-          <div className="teaching-skills-grid">
+          <div className="skills-grid">
             {mySkills.map((skill) => (
-              <div className="card skill-card" key={skill._id}>
-                <div className="skill-card-name">{skill.name}</div>
-                <span className={`badge ${skill.verified ? 'badge-verified' : 'badge-pending'}`} style={{ marginBottom: 8 }}>
+              <div className="card" key={skill._id}>
+                <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 8 }}>{skill.name}</div>
+                <span className={`badge ${skill.verified ? 'badge-success' : 'badge-neutral'}`} style={{ marginBottom: 12 }}>
                   {skill.verified ? '✓ Verified' : '⏳ Pending'}
                 </span>
-                <div className="skill-students">
+                <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 8 }}>
                   👥 {skill.students?.length ?? 0} Student{skill.students?.length !== 1 ? 's' : ''}
                 </div>
               </div>
             ))}
-            <div className="card skill-card-add" onClick={() => navigate('/teach')}>
-              <div className="skill-card-add-icon">＋</div>
-              <div className="skill-card-add-text">Add New Skill</div>
-              <div className="skill-card-add-sub">Become a teacher</div>
+            <div className="card" onClick={() => navigate('/teach')} style={{ cursor: 'pointer', borderStyle: 'dashed', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ fontSize: '1.8rem', color: 'var(--primary)', marginBottom: 6 }}>＋</div>
+              <div style={{ fontWeight: 700, fontSize: 15 }}>Add New Skill</div>
+              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>Become a teacher</div>
             </div>
           </div>
         </div>
@@ -237,21 +227,14 @@ export default function Home() {
             <h2 className="section-title">Recent Activity</h2>
           </div>
           <div className="card">
-            <div className="activity-list">
-              <div className="activity-item">
-                <div className="activity-dot" />
-                <span className="activity-text">You have {myRequests.filter((r) => r.teacherResponses.length > 0).length} learning requests with teacher responses</span>
-                <span className="activity-time">now</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 14 }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--primary)' }} />
+                <span>You have {myRequests.filter((r) => r.teacherResponses?.length > 0).length} learning requests with teacher responses</span>
               </div>
-              <div className="activity-item">
-                <div className="activity-dot" style={{ background: 'var(--success)' }} />
-                <span className="activity-text">You are teaching {mySkills.length} skill{mySkills.length !== 1 ? 's' : ''}</span>
-                <span className="activity-time">now</span>
-              </div>
-              <div className="activity-item">
-                <div className="activity-dot" style={{ background: 'var(--warning)' }} />
-                <span className="activity-text">{mySkills.filter((s) => s.verified).length} skill{mySkills.filter((s) => s.verified).length !== 1 ? 's' : ''} verified by Teach Devta</span>
-                <span className="activity-time">—</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 14 }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--success)' }} />
+                <span>You are teaching {mySkills.length} skill{mySkills.length !== 1 ? 's' : ''}</span>
               </div>
             </div>
           </div>

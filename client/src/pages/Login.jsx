@@ -6,9 +6,9 @@ import { useAuth } from '../context/AuthContext';
 export default function Login() {
   const navigate = useNavigate();
   const { loginUser } = useAuth();
-  const [form,    setForm]    = useState({ email: '', password: '' });
-  const [showPw,  setShowPw]  = useState(false);
-  const [error,   setError]   = useState('');
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) =>
@@ -16,108 +16,94 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); setLoading(true);
+    setError('');
+    setLoading(true);
     try {
       const { data } = await login(form);
       loginUser(data, data.token);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-layout">
-      {/* ── LEFT: Branding ── */}
-      <div className="auth-left">
-        <div className="auth-logo-wrap">
-          <div className="auth-logo-badge">TL&amp;E</div>
-          <span className="auth-logo-text">Teach, Learn &amp; Earn</span>
-        </div>
-        <h1 className="auth-heading">
-          Learn what you love.<br />
-          <span className="gradient-text">Teach what you know.</span>
-        </h1>
-        <p className="auth-tagline">
-          A peer-to-peer skill exchange platform where anyone can learn and teach simultaneously.
-        </p>
-        <div className="auth-features">
-          {[
-            { icon: '📚', title: 'Learn from Real People',  desc: 'Connect with verified teachers with real-world skills.' },
-            { icon: '🎓', title: 'Share Your Knowledge',    desc: 'Become a teacher. Help others grow with your expertise.' },
-            { icon: '🚀', title: 'Grow Together',           desc: 'Build skills, earn recognition and grow your career.' },
-          ].map((f) => (
-            <div className="auth-feature" key={f.title}>
-              <div className="auth-feature-icon">{f.icon}</div>
-              <div className="auth-feature-text">
-                <strong>{f.title}</strong>
-                {f.desc}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="skill-flow">
-          {[{ icon: '👨‍🎓', label: 'Learn' }, { icon: '💡', label: 'Skill' }, { icon: '🎓', label: 'Teach' }, { icon: '🚀', label: 'Grow' }].map((n, i, arr) => (
-            <span key={n.label} style={{ display: 'contents' }}>
-              <div className="flow-node">
-                <div className="flow-icon">{n.icon}</div>
-                <span className="flow-label">{n.label}</span>
-              </div>
-              {i < arr.length - 1 && <span className="flow-arrow">→</span>}
-            </span>
-          ))}
-        </div>
-      </div>
+    <div className="auth-neo-wrapper page-enter">
+      <div className="neo-disc-card">
+        <h1 className="neo-auth-title">Login</h1>
+        <p className="neo-auth-subtitle">Sign in to your account</p>
 
-      {/* ── RIGHT: Form ── */}
-      <div className="auth-right">
-        <div className="auth-form-container">
-          <h2 className="auth-form-title">Welcome Back 👋</h2>
-          <p className="auth-form-subtitle">Login to continue your learning journey.</p>
+        <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+          {/* Username / Email Field */}
+          <div className="neo-input-group">
+            <span className="neo-input-icon">👤</span>
+            <input
+              type="text"
+              name="email"
+              className="neo-input-field"
+              placeholder="Username or Email"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label className="form-label" htmlFor="email">Email</label>
+          {/* Password Field */}
+          <div className="neo-input-group neo-input-focus-red">
+            <span className="neo-input-icon neo-icon-red">🔒</span>
+            <input
+              type="password"
+              name="password"
+              className="neo-input-field"
+              placeholder="Password"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          {/* Remember me & Forgot Password */}
+          <div className="neo-auth-row">
+            <label className="neo-toggle-wrap">
               <input
-                className="form-input" id="email" name="email" type="email"
-                placeholder="Enter your email" value={form.email}
-                onChange={handleChange} required
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="neo-toggle-checkbox"
               />
-            </div>
+              <span className="neo-toggle-slider" />
+              <span className="neo-toggle-label">Remember me</span>
+            </label>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="password">
-                Password
-                <a className="forgot-link" onClick={() => alert('Password reset coming soon!')}>Forgot password?</a>
-              </label>
-              <div className="input-wrapper">
-                <input
-                  className="form-input" id="password" name="password"
-                  type={showPw ? 'text' : 'password'}
-                  placeholder="Enter your password"
-                  value={form.password} onChange={handleChange} required
-                />
-                <button type="button" className="input-eye" onClick={() => setShowPw((v) => !v)}>
-                  {showPw ? '🙈' : '👁'}
-                </button>
-              </div>
-            </div>
+            <a
+              href="#"
+              className="neo-forgot-link"
+              onClick={(e) => {
+                e.preventDefault();
+                alert('Password reset link sent!');
+              }}
+            >
+              Forgot password?
+            </a>
+          </div>
 
-            {error && <p className="form-error">{error}</p>}
+          {error && <div className="neo-error-badge">{error}</div>}
 
-            <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading}>
-              {loading ? 'Logging in…' : 'Login'}
-            </button>
+          {/* Sign In Button */}
+          <button type="submit" className="neo-btn-primary" disabled={loading}>
+            {loading ? 'SIGNING IN…' : 'SIGN IN'}
+          </button>
 
-            <div className="divider">OR</div>
-            <p className="auth-switch">
-              Don&apos;t have an account?{' '}
-              <a onClick={() => navigate('/signup')}>Create Account</a>
-            </p>
-          </form>
-        </div>
+          {/* Sign up Link */}
+          <p className="neo-auth-footer">
+            Don&apos;t have an account?{' '}
+            <span className="neo-link-red" onClick={() => navigate('/signup')}>
+              Sign up
+            </span>
+          </p>
+        </form>
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -5,6 +6,22 @@ export default function Navbar() {
   const { user, logoutUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [theme, setTheme] = useState(() => localStorage.getItem('tle_theme') || 'dark');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('tle_theme', theme);
+  }, [theme]);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
 
   // Hide Navbar on standalone auth pages
   if (['/login', '/signup'].includes(location.pathname)) {
@@ -20,6 +37,16 @@ export default function Navbar() {
     ? user.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
     : 'U';
 
+  const navItems = [
+    { to: '/',         label: 'Home'     },
+    { to: '/learn',    label: 'Learn'    },
+    { to: '/teach',    label: 'Teach'    },
+    ...(user ? [
+      { to: '/progress', label: 'Progress' },
+      { to: '/requests', label: 'Requests' },
+    ] : []),
+  ];
+
   return (
     <nav className="navbar">
       <div className="navbar-inner">
@@ -29,17 +56,9 @@ export default function Navbar() {
           <span className="logo-text">Teach, Learn &amp; Earn</span>
         </div>
 
-        {/* Nav links */}
-        <div className="navbar-nav">
-          {[
-            { to: '/',         label: 'Home'     },
-            { to: '/learn',    label: 'Learn'    },
-            { to: '/teach',    label: 'Teach'    },
-            ...(user ? [
-              { to: '/progress', label: 'Progress' },
-              { to: '/requests', label: 'Requests' },
-            ] : []),
-          ].map(({ to, label }) => (
+        {/* Desktop Nav links */}
+        <div className="navbar-nav desktop-only">
+          {navItems.map(({ to, label }) => (
             <NavLink
               key={to}
               to={to}
@@ -53,6 +72,16 @@ export default function Navbar() {
 
         {/* Right actions */}
         <div className="navbar-actions">
+          {/* Theme Toggle Button */}
+          <button
+            className="theme-toggle-btn"
+            onClick={toggleTheme}
+            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+            aria-label="Toggle Theme"
+          >
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
+
           {user ? (
             <>
               <button className="notif-btn" title="Notifications">
@@ -65,7 +94,7 @@ export default function Navbar() {
               </div>
             </>
           ) : (
-            <div style={{ display: 'flex', gap: 10 }}>
+            <div className="auth-btn-group">
               <button className="btn btn-secondary btn-sm" onClick={() => navigate('/login')}>
                 Login
               </button>
@@ -74,8 +103,33 @@ export default function Navbar() {
               </button>
             </div>
           )}
+
+          {/* Mobile Hamburger Toggle */}
+          <button
+            className="mobile-menu-btn"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle Navigation Menu"
+          >
+            {mobileMenuOpen ? '✕' : '☰'}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Drawer Menu */}
+      {mobileMenuOpen && (
+        <div className="mobile-nav-drawer page-enter">
+          {navItems.map(({ to, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={to === '/'}
+              className={({ isActive }) => `mobile-nav-link${isActive ? ' active' : ''}`}
+            >
+              {label}
+            </NavLink>
+          ))}
+        </div>
+      )}
     </nav>
   );
 }
