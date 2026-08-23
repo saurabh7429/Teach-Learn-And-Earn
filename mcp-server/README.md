@@ -38,7 +38,7 @@ Add the following to your `mcp_config.json`:
       "command": "node",
       "args": ["c:/Users/msaur/Desktop/github/Teach-Learn-And-Earn/mcp-server/index.js"],
       "env": {
-        "GROQ_API_KEY": "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"
+        "GROQ_API_KEY": "YOUR_GROQ_API_KEY_HERE"
       }
     }
   }

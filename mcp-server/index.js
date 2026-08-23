@@ -21,7 +21,7 @@ if (fs.existsSync(serverEnvPath)) {
   dotenv.config();
 }
 
-const GROQ_API_KEY = process.env.GROQ_API_KEY || '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';
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const API_BASE = 'http://localhost:5000/api';
 
 /**

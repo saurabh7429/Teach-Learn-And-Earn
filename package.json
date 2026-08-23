@@ -7,8 +7,7 @@
     "client": "npm --prefix client run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "start": "npm run dev",
-    "mcp": "npm --prefix mcp-server start",
-    "test": "node test-app.js"
+    "mcp": "npm --prefix mcp-server start"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
