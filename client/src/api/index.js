@@ -36,4 +36,9 @@ export const sendMessage   = (id, content) => api.post(`/chats/${id}/message`, {
 // Progress
 export const getProgress   = ()      => api.get('/progress');
 
+// AI (Teach Devta / Groq)
+export const askDevtaAI       = (data) => api.post('/ai/ask', data);
+export const generateDevtaQuiz = (data) => api.post('/ai/generate-quiz', data);
+
 export default api;
+

@@ -104,36 +104,49 @@ router.post('/:id/offer', protect, async (req, res) => {
 router.post('/:id/select', protect, async (req, res) => {
   try {
     const { teacherId } = req.body;
+    if (!teacherId) return res.status(400).json({ message: 'teacherId is required' });
+
     const request = await LearningRequest.findById(req.params.id);
     if (!request) return res.status(404).json({ message: 'Request not found' });
     if (request.student.toString() !== req.user._id.toString())
       return res.status(403).json({ message: 'Only the student can select a teacher' });
 
-    const offered = request.teacherResponses.some(
-      (r) => r.teacher.toString() === teacherId
+    // Check if teacherId matches either the teacher User ID or subdocument _id
+    const responseItem = request.teacherResponses.find(
+      (r) =>
+        (r.teacher && r.teacher.toString() === teacherId.toString()) ||
+        (r._id && r._id.toString() === teacherId.toString())
     );
-    if (!offered) return res.status(400).json({ message: 'Teacher has not offered for this request' });
 
-    request.selectedTeacher = teacherId;
+    if (!responseItem) {
+      return res.status(400).json({ message: 'Teacher has not offered for this request' });
+    }
+
+    const actualTeacherId = responseItem.teacher;
+    request.selectedTeacher = actualTeacherId;
     request.status = 'selected';
     await request.save();
 
     // Create a chat between student and selected teacher
     const existingChat = await Chat.findOne({
-      participants: { $all: [req.user._id, teacherId] },
+      participants: { $all: [req.user._id, actualTeacherId] },
       request: request._id,
     });
 
     if (!existingChat) {
       await Chat.create({
-        participants: [req.user._id, teacherId],
-        skill:        request.skill,
+        participants: [req.user._id, actualTeacherId],
+        skill:        request.skill || 'Learning Session',
         request:      request._id,
         messages:     [],
       });
     }
 
-    const populated = await request.populate('selectedTeacher', 'name username');
+    const populated = await request
+      .populate('student', 'name username')
+      .populate('teacherResponses.teacher', 'name username')
+      .populate('selectedTeacher', 'name username');
+
     res.json(populated);
   } catch (err) {
     res.status(500).json({ message: err.message });

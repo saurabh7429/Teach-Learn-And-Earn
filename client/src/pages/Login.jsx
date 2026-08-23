@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../api';
 import { useAuth } from '../context/AuthContext';
 
@@ -32,8 +32,12 @@ export default function Login() {
   return (
     <div className="auth-neo-wrapper page-enter">
       <div className="neo-disc-card">
-        <h1 className="neo-auth-title">Login</h1>
-        <p className="neo-auth-subtitle">Sign in to your account</p>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+          <div className="logo-badge" style={{ fontSize: '1rem', padding: '8px 16px' }}>TL&amp;E</div>
+        </div>
+
+        <h1 className="neo-auth-title">Welcome Back</h1>
+        <p className="neo-auth-subtitle">Sign in to your learning &amp; teaching workspace</p>
 
         <form onSubmit={handleSubmit} style={{ width: '100%' }}>
           {/* Username / Email Field */}
@@ -51,8 +55,8 @@ export default function Login() {
           </div>
 
           {/* Password Field */}
-          <div className="neo-input-group neo-input-focus-red">
-            <span className="neo-input-icon neo-icon-red">🔒</span>
+          <div className="neo-input-group">
+            <span className="neo-input-icon">🔒</span>
             <input
               type="password"
               name="password"
@@ -73,7 +77,6 @@ export default function Login() {
                 onChange={(e) => setRememberMe(e.target.checked)}
                 className="neo-toggle-checkbox"
               />
-              <span className="neo-toggle-slider" />
               <span className="neo-toggle-label">Remember me</span>
             </label>
 
@@ -82,7 +85,7 @@ export default function Login() {
               className="neo-forgot-link"
               onClick={(e) => {
                 e.preventDefault();
-                alert('Password reset link sent!');
+                alert('Password reset link sent to your registered email!');
               }}
             >
               Forgot password?
@@ -93,15 +96,15 @@ export default function Login() {
 
           {/* Sign In Button */}
           <button type="submit" className="neo-btn-primary" disabled={loading}>
-            {loading ? 'SIGNING IN…' : 'SIGN IN'}
+            {loading ? 'SIGNING IN…' : 'SIGN IN 🚀'}
           </button>
 
           {/* Sign up Link */}
           <p className="neo-auth-footer">
-            Don&apos;t have an account?{' '}
-            <span className="neo-link-red" onClick={() => navigate('/signup')}>
-              Sign up
-            </span>
+            Don&apos;t have an account?
+            <Link to="/signup" className="neo-auth-link">
+              Create Account
+            </Link>
           </p>
         </form>
       </div>

@@ -3,18 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getMySkills, getMyRequests, getChats } from '../api';
 
-export default function Home() {
+export default function Home({ onOpenAI }) {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [mySkills,   setMySkills]   = useState([]);
+  const [mySkills, setMySkills] = useState([]);
   const [myRequests, setMyRequests] = useState([]);
-  const [myChats,    setMyChats]    = useState([]);
+  const [myChats, setMyChats] = useState([]);
 
   useEffect(() => {
     if (user) {
-      getMySkills()   .then((r) => setMySkills(r.data))   .catch(() => {});
-      getMyRequests() .then((r) => setMyRequests(r.data)) .catch(() => {});
-      getChats()      .then((r) => setMyChats(r.data))    .catch(() => {});
+      getMySkills().then((r) => setMySkills(r.data)).catch(() => {});
+      getMyRequests().then((r) => setMyRequests(r.data)).catch(() => {});
+      getChats().then((r) => setMyChats(r.data)).catch(() => {});
     }
   }, [user]);
 
@@ -22,11 +22,21 @@ export default function Home() {
   const greeting =
     hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
 
-  const firstName = user?.name?.split(' ')[0] ?? 'Guest';
+  const firstName = user?.name?.split(' ')[0] ?? 'Explorer';
   const activeRequests = myRequests.filter((r) => ['selected', 'active'].includes(r.status));
 
+  const popularSkills = [
+    '⚛️ React 19 & Next.js',
+    '🐍 Python & FastMCP',
+    '⚡ Groq & LLM Tuning',
+    '🎨 3D CSS & UI Design',
+    '🦀 Rust & WebAssembly',
+    '📱 Mobile React Native',
+    '☁️ Cloud & Docker',
+  ];
+
   // ══════════════════════════════════════════════════════════════════
-  // GUEST LANDING PAGE (Without Log-in Dashboard)
+  // GUEST LANDING PAGE
   // ══════════════════════════════════════════════════════════════════
   if (!user) {
     return (
@@ -35,54 +45,75 @@ export default function Home() {
           {/* Hero Banner */}
           <div className="hero-section">
             <div className="badge badge-indigo" style={{ marginBottom: 20 }}>
-              🚀 Peer-to-Peer Skill Exchange Platform
+              🚀 Peer-to-Peer Skill Exchange + Groq AI Assessment
             </div>
             <h1 className="hero-greeting">
               Teach, Learn &amp; Earn
             </h1>
             <p className="hero-subtitle">
               Learn what you love. Teach what you know.<br />
-              One single account allows you to learn new skills and share your expertise simultaneously.
+              One account lets you discover expert teachers and verify your own teaching skills with <strong>Teach Devta AI</strong>.
             </p>
 
-            <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 48 }}>
+            <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 24 }}>
               <button className="btn btn-primary btn-lg" onClick={() => navigate('/signup')}>
                 Get Started Free 🚀
               </button>
               <button className="btn btn-secondary btn-lg" onClick={() => navigate('/login')}>
-                Login to Workspace 👋
+                Sign In to Workspace 👋
               </button>
+            </div>
+
+            {/* Popular Skills Horizontal Scroll Snap */}
+            <div style={{ marginTop: 24 }}>
+              <div className="scroll-snap-x">
+                {popularSkills.map((sk, idx) => (
+                  <button
+                    key={idx}
+                    className="category-chip scroll-snap-item"
+                    onClick={() => navigate('/signup')}
+                  >
+                    {sk}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Core Action Cards (Learn vs Teach) */}
           <div className="dashboard-section">
-            <div style={{ textAlign: 'center', marginBottom: 32 }}>
-              <h2 className="section-title" style={{ fontSize: 24, marginBottom: 8 }}>
-                What do you want to do today?
+            <div style={{ textAlign: 'center', marginBottom: 36 }}>
+              <h2 className="section-title" style={{ fontSize: '1.8rem', marginBottom: 8 }}>
+                Choose Your Pathway
               </h2>
-              <p style={{ color: 'var(--text-secondary)', fontSize: 15 }}>
-                Choose your path or do both with a single account!
+              <p style={{ color: 'var(--text-secondary)', fontSize: '1.05rem' }}>
+                Exchange knowledge directly with peers without monetary barriers.
               </p>
             </div>
 
             <div className="action-cards-grid">
-              <div className="action-card" onClick={() => navigate('/signup')}>
-                <span className="action-card-icon">📚</span>
-                <h2 className="action-card-title">LEARN</h2>
-                <p className="action-card-desc">
-                  Find teachers and learn new skills. Post specific learning requests like &ldquo;How do loops work in C?&rdquo; and get real responses.
-                </p>
-                <button className="btn btn-primary btn-sm">Explore Skills →</button>
+              <div className="action-card card-3d" onClick={() => navigate('/signup')}>
+                <div>
+                  <span className="action-card-icon">📚</span>
+                  <h2 className="action-card-title">LEARN</h2>
+                  <p className="action-card-desc">
+                    Connect with peer experts for 1-on-1 sessions. Ask specific questions and receive structured teaching guidance.
+                  </p>
+                </div>
+                <button className="btn btn-primary btn-md">
+                  Explore Learning →
+                </button>
               </div>
 
-              <div className="action-card" onClick={() => navigate('/signup')}>
-                <span className="action-card-icon">🎓</span>
-                <h2 className="action-card-title">TEACH</h2>
-                <p className="action-card-desc">
-                  Share your knowledge with others. Pass the Teach Devta assessment to verify your skills and start teaching active learners.
-                </p>
-                <button className="btn btn-secondary btn-sm">
+              <div className="action-card card-3d" onClick={() => navigate('/signup')}>
+                <div>
+                  <span className="action-card-icon">🎓</span>
+                  <h2 className="action-card-title">TEACH</h2>
+                  <p className="action-card-desc">
+                    Share your mastery. Pass the Teach Devta dynamic assessment to earn a verified teacher badge and match with eager learners.
+                  </p>
+                </div>
+                <button className="btn btn-secondary btn-md">
                   Start Teaching →
                 </button>
               </div>
@@ -96,38 +127,15 @@ export default function Home() {
               <div className="teach-devta-info">
                 <div className="teach-devta-name">Teach Devta AI Engine</div>
                 <div className="teach-devta-desc">
-                  Our double-duty AI assistant acts as your <strong>Personal Learning Assistant</strong> when you learn,
-                  and as a <strong>Skill Qualification Examiner</strong> to verify teachers before they teach!
+                  Powered by <strong>Groq Llama 3.3</strong> — acts as your instant 24/7 learning tutor and verifies teacher qualification quizzes in real time!
                 </div>
               </div>
-              <button className="btn btn-primary" onClick={() => navigate('/signup')}>
-                Try Teach Devta 🤖
+              <button 
+                className="btn btn-gradient btn-md"
+                onClick={() => onOpenAI?.('Teach Devta, explain the TL&E learning process!')}
+              >
+                ⚡ Ask Teach Devta
               </button>
-            </div>
-          </div>
-
-          {/* Popular Categories Preview */}
-          <div className="dashboard-section">
-            <div className="section-header">
-              <h2 className="section-title">Popular Skills Available</h2>
-              <button className="btn btn-ghost btn-sm" onClick={() => navigate('/signup')}>View All →</button>
-            </div>
-            <div className="skills-grid">
-              {[
-                { name: 'JavaScript', category: 'Web Development', students: 18 },
-                { name: 'C Programming', category: 'Systems & Code', students: 24 },
-                { name: 'React.js', category: 'Frontend UI', students: 15 },
-                { name: 'HTML & CSS', category: 'Web Design', students: 30 },
-              ].map((s) => (
-                <div className="card card-hover" key={s.name} onClick={() => navigate('/signup')} style={{ cursor: 'pointer' }}>
-                  <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 4 }}>{s.name}</div>
-                  <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>📌 {s.category}</div>
-                  <div style={{ marginTop: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className="badge badge-success">✓ Verified</span>
-                    <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>👥 {s.students} learners</span>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </div>
@@ -141,103 +149,92 @@ export default function Home() {
   return (
     <div className="page-body page-enter">
       <div className="container">
-        {/* Hero */}
-        <div className="hero-section">
-          <h1 className="hero-greeting">{greeting}, {firstName} 👋</h1>
-          <p className="hero-subtitle">What would you like to do today?</p>
+        {/* Welcome Header */}
+        <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+          <div>
+            <h1>{greeting}, {firstName}! 👋</h1>
+            <p>Welcome to your active learning &amp; teaching headquarters.</p>
+          </div>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <button className="btn btn-gradient btn-sm" onClick={() => onOpenAI?.('')}>
+              🤖 Ask Teach Devta
+            </button>
+            <button className="btn btn-primary btn-sm" onClick={() => navigate('/learn')}>
+              + Learn Skill
+            </button>
+          </div>
+        </div>
 
-          <div className="action-cards-grid">
-            <div className="action-card" onClick={() => navigate('/learn')}>
+        {/* Action Pathway Cards */}
+        <div className="action-cards-grid" style={{ marginBottom: 36 }}>
+          <div className="action-card card-3d" onClick={() => navigate('/learn')}>
+            <div>
               <span className="action-card-icon">📚</span>
-              <h2 className="action-card-title">LEARN</h2>
-              <p className="action-card-desc">Find teachers and learn new skills from real people.</p>
-              <button className="btn btn-primary btn-sm">Explore Skills →</button>
+              <h2 className="action-card-title">My Learning</h2>
+              <p className="action-card-desc">
+                {activeRequests.length > 0
+                  ? `You have ${activeRequests.length} active learning session(s) in progress.`
+                  : 'Post a learning request or ask Teach Devta to resolve doubts.'}
+              </p>
             </div>
-            <div className="action-card" onClick={() => navigate('/teach')}>
+            <button className="btn btn-primary btn-sm">Open Learning Room →</button>
+          </div>
+
+          <div className="action-card card-3d" onClick={() => navigate('/teach')}>
+            <div>
               <span className="action-card-icon">🎓</span>
-              <h2 className="action-card-title">TEACH</h2>
-              <p className="action-card-desc">Share your knowledge and help others grow.</p>
-              <button className="btn btn-secondary btn-sm">
-                Teaching →
+              <h2 className="action-card-title">My Teaching</h2>
+              <p className="action-card-desc">
+                {mySkills.length > 0
+                  ? `You have ${mySkills.length} listed skill(s) (${mySkills.filter(s => s.verified).length} verified).`
+                  : 'Add your skills and pass verification to start accepting student requests.'}
+              </p>
+            </div>
+            <button className="btn btn-secondary btn-sm">Manage Teaching →</button>
+          </div>
+        </div>
+
+        {/* Active Learning Feed & Chats */}
+        <div className="dashboard-section">
+          <div className="section-header">
+            <h2 className="section-title">Active Conversations &amp; Sessions</h2>
+            <button className="btn btn-secondary btn-sm" onClick={() => navigate('/requests')}>
+              View All Requests
+            </button>
+          </div>
+
+          {myChats.length === 0 ? (
+            <div className="card" style={{ padding: 36, textAlign: 'center', color: 'var(--text-muted)' }}>
+              <p style={{ marginBottom: 16 }}>No active chat sessions right now.</p>
+              <button className="btn btn-primary btn-sm" onClick={() => navigate('/learn')}>
+                + Start Learning Request
               </button>
             </div>
-          </div>
-        </div>
-
-        {/* Continue Learning */}
-        {activeRequests.length > 0 && (
-          <div className="dashboard-section">
-            <div className="section-header">
-              <h2 className="section-title">Continue Learning</h2>
-              <button className="btn btn-ghost btn-sm" onClick={() => navigate('/learn')}>View All →</button>
-            </div>
-            {activeRequests.map((req) => (
-              <div className="card" key={req._id} style={{ marginBottom: 16 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
-                  <div>
-                    <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 4 }}>{req.skill || req.question}</div>
-                    <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-                      👤 Teacher: {req.selectedTeacher?.name ?? 'Assigned'}
-                    </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+              {myChats.map((chat) => (
+                <div 
+                  key={chat._id} 
+                  className="card card-3d" 
+                  style={{ padding: 20, cursor: 'pointer' }}
+                  onClick={() => navigate(`/chat/${chat._id}`)}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                    <span className="badge badge-verified">💬 Active Session</span>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                      {chat.messages?.length || 0} msgs
+                    </span>
                   </div>
-                  <span className="status-badge selected">Active</span>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>
+                    {chat.skill || 'Learning Exchange'}
+                  </h3>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                    Click to enter live chat room →
+                  </p>
                 </div>
-                <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end' }}>
-                  {myChats.find((c) => c.request === req._id) && (
-                    <button className="btn btn-primary btn-sm"
-                      onClick={() => navigate(`/chat/${myChats.find((c) => c.request === req._id)?._id}`)}>
-                      💬 Open Chat
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Your Teaching */}
-        <div className="dashboard-section">
-          <div className="section-header">
-            <h2 className="section-title">Your Teaching</h2>
-            <button className="btn btn-ghost btn-sm" onClick={() => navigate('/teach')}>Manage →</button>
-          </div>
-          <div className="skills-grid">
-            {mySkills.map((skill) => (
-              <div className="card" key={skill._id}>
-                <div style={{ fontSize: 17, fontWeight: 700, marginBottom: 8 }}>{skill.name}</div>
-                <span className={`badge ${skill.verified ? 'badge-success' : 'badge-neutral'}`} style={{ marginBottom: 12 }}>
-                  {skill.verified ? '✓ Verified' : '⏳ Pending'}
-                </span>
-                <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 8 }}>
-                  👥 {skill.students?.length ?? 0} Student{skill.students?.length !== 1 ? 's' : ''}
-                </div>
-              </div>
-            ))}
-            <div className="card" onClick={() => navigate('/teach')} style={{ cursor: 'pointer', borderStyle: 'dashed', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{ fontSize: '1.8rem', color: 'var(--primary)', marginBottom: 6 }}>＋</div>
-              <div style={{ fontWeight: 700, fontSize: 15 }}>Add New Skill</div>
-              <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>Become a teacher</div>
+              ))}
             </div>
-          </div>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="dashboard-section">
-          <div className="section-header">
-            <h2 className="section-title">Recent Activity</h2>
-          </div>
-          <div className="card">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 14 }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--primary)' }} />
-                <span>You have {myRequests.filter((r) => r.teacherResponses?.length > 0).length} learning requests with teacher responses</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 14 }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--success)' }} />
-                <span>You are teaching {mySkills.length} skill{mySkills.length !== 1 ? 's' : ''}</span>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

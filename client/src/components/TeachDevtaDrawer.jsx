@@ -1,0 +1,164 @@
+import { useState, useRef, useEffect } from 'react';
+import { askDevtaAI } from '../api';
+import MarkdownRenderer from './MarkdownRenderer';
+
+export default function TeachDevtaDrawer({ isOpen, onClose, initialQuery = '' }) {
+  const [messages, setMessages] = useState([
+    {
+      sender: 'devta',
+      text: 'Namaste! I am **Teach Devta AI** (powered by Groq Llama 3.3). How can I assist your learning or teaching journey today?',
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    },
+  ]);
+  const [input, setInput] = useState(initialQuery);
+  const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    if (initialQuery && isOpen) {
+      setInput(initialQuery);
+    }
+  }, [initialQuery, isOpen]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, loading]);
+
+  if (!isOpen) return null;
+
+  const handleSend = async (textToSend) => {
+    const q = (textToSend || input).trim();
+    if (!q || loading) return;
+
+    const userMsg = {
+      sender: 'user',
+      text: q,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    setMessages((prev) => [...prev, userMsg]);
+    setInput('');
+    setLoading(true);
+
+    try {
+      const res = await askDevtaAI({ question: q });
+      const devtaMsg = {
+        sender: 'devta',
+        text: res.data.answer,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+      setMessages((prev) => [...prev, devtaMsg]);
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: 'devta',
+          text: err.response?.data?.fallbackAnswer || 'Teach Devta encountered an issue. Please try again or check connection.',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const quickPrompts = [
+    'Explain React useEffect lifecycle',
+    'Props vs State in React with code',
+    'How do I pass teacher skill verification?',
+    'Best practices for peer learning',
+  ];
+
+  return (
+    <div className="devta-drawer-overlay" onClick={onClose}>
+      <div className="devta-drawer" onClick={(e) => e.stopPropagation()}>
+        {/* Drawer Header */}
+        <div className="devta-drawer-header">
+          <div className="devta-drawer-title-wrap">
+            <div className="devta-ai-avatar-badge">🤖</div>
+            <div>
+              <h3 className="devta-drawer-title">Teach Devta AI</h3>
+              <span className="devta-drawer-sub">Groq Llama 3.3 • Formatted Markdown &amp; Code</span>
+            </div>
+          </div>
+          <button className="devta-drawer-close" onClick={onClose} aria-label="Close Drawer">
+            ✕
+          </button>
+        </div>
+
+        {/* Quick Suggestion Chips */}
+        <div className="devta-quick-chips">
+          {quickPrompts.map((p, idx) => (
+            <button
+              key={idx}
+              className="devta-chip"
+              onClick={() => handleSend(p)}
+              disabled={loading}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+
+        {/* Messages Stream */}
+        <div className="devta-messages-stream">
+          {messages.map((m, i) => (
+            <div
+              key={i}
+              className={`devta-msg-row ${m.sender === 'user' ? 'user-row' : 'devta-row'}`}
+            >
+              {m.sender === 'devta' && <span className="devta-mini-avatar">🤖</span>}
+              <div className={`devta-msg-bubble ${m.sender === 'user' ? 'user-bubble' : 'devta-bubble'}`}>
+                <div className="devta-msg-content">
+                  {m.sender === 'devta' ? (
+                    <MarkdownRenderer content={m.text} />
+                  ) : (
+                    m.text
+                  )}
+                </div>
+                <span className="devta-msg-time">{m.time}</span>
+              </div>
+            </div>
+          ))}
+
+          {loading && (
+            <div className="devta-msg-row devta-row">
+              <span className="devta-mini-avatar">🤖</span>
+              <div className="devta-msg-bubble devta-bubble devta-typing">
+                <span className="typing-dot" />
+                <span className="typing-dot" />
+                <span className="typing-dot" />
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input Bar */}
+        <form
+          className="devta-input-bar"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSend();
+          }}
+        >
+          <input
+            type="text"
+            className="devta-input-field"
+            placeholder="Ask Teach Devta anything…"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            disabled={loading}
+          />
+          <button
+            type="submit"
+            className="devta-send-btn"
+            disabled={!input.trim() || loading}
+          >
+            {loading ? '…' : '⚡ Send'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}

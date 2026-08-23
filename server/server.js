@@ -21,6 +21,7 @@ app.use('/api/skills',   require('./routes/skills'));
 app.use('/api/requests', require('./routes/requests'));
 app.use('/api/chats',    require('./routes/chats'));
 app.use('/api/progress', require('./routes/progress'));
+app.use('/api/ai',       require('./routes/ai'));
 
 // ── Health check ──
 app.get('/', (req, res) => res.json({ message: 'TL&E API is running 🚀' }));

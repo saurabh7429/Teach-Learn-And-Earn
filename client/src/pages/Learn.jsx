@@ -1,21 +1,28 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMyRequests, getChats, createRequest } from '../api';
+import { getMyRequests, getChats, createRequest, askDevtaAI, selectTeacher } from '../api';
 import Modal from '../components/Modal';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 
-export default function Learn() {
+export default function Learn({ onOpenAI }) {
   const navigate = useNavigate();
   const [myRequests, setMyRequests] = useState([]);
   const [myChats, setMyChats] = useState([]);
   const [search, setSearch] = useState('');
+  const [activeCategory, setActiveCategory] = useState('All');
   const [showModal, setShowModal] = useState(false);
   const [showDevtaModal, setShowDevtaModal] = useState(false);
+  
+  // Real Groq AI State
   const [devtaQuestion, setDevtaQuestion] = useState('');
   const [devtaAnswer, setDevtaAnswer] = useState('');
   const [devtaLoading, setDevtaLoading] = useState(false);
+
   const [form, setForm] = useState({ question: '', description: '', skill: '' });
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState('');
+
+  const categories = ['All', 'React & Frontend', 'Backend & Node', 'AI & Groq', '3D Design & CSS', 'Data Structures'];
 
   useEffect(() => {
     getMyRequests().then((r) => setMyRequests(r.data)).catch(() => {});
@@ -35,7 +42,7 @@ export default function Learn() {
       setMyRequests((prev) => [data, ...prev]);
       setShowModal(false);
       setForm({ question: '', description: '', skill: '' });
-      showToast('Learning request posted! Teachers will respond soon. 🎉');
+      showToast('Learning request posted! Qualified teachers will be notified. 🎉');
     } catch (err) {
       showToast(err.response?.data?.message || 'Failed to create request.');
     } finally {
@@ -43,193 +50,328 @@ export default function Learn() {
     }
   };
 
-  const handleAskDevta = (e) => {
+  const handleSelectTeacher = async (reqId, teacherId) => {
+    try {
+      const { data } = await selectTeacher(reqId, teacherId);
+      setMyRequests((prev) => prev.map((r) => (r._id === reqId ? data : r)));
+      showToast('Teacher selected! 1-on-1 session activated. 🎉');
+      navigate('/requests');
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to select teacher.');
+    }
+  };
+
+  // Real Groq AI Teach Devta Call
+  const handleAskDevta = async (e) => {
     e.preventDefault();
     if (!devtaQuestion.trim()) return;
     setDevtaLoading(true);
     setDevtaAnswer('');
 
-    setTimeout(() => {
+    try {
+      const res = await askDevtaAI({ question: devtaQuestion });
+      setDevtaAnswer(res.data.answer);
+    } catch (err) {
       setDevtaAnswer(
-        `🤖 Teach Devta AI Answer:\nGreat question regarding "${devtaQuestion}"! In programming, breaking complex logic into step-by-step modular blocks is key. Connect with an expert teacher on TL&E for 1-on-1 code reviews!`
+        err.response?.data?.fallbackAnswer || 
+        'Teach Devta AI is currently busy. Please try asking again shortly!'
       );
+    } finally {
       setDevtaLoading(false);
-    }, 1200);
+    }
   };
 
   const activeRequests = myRequests.filter((r) =>
     ['selected', 'active'].includes(r.status)
   );
 
+  const filteredRequests = myRequests.filter((req) => {
+    const matchesSearch = 
+      (req.question || '').toLowerCase().includes(search.toLowerCase()) ||
+      (req.skill || '').toLowerCase().includes(search.toLowerCase());
+    return matchesSearch;
+  });
+
   return (
     <div className="page-body page-enter">
       <div className="container">
-        <div className="page-header">
-          <h1>Learn 📚</h1>
-          <p>Find skills, connect with teachers and continue your learning journey.</p>
+        {/* Header */}
+        <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+          <div>
+            <h1>Learn 📚</h1>
+            <p>Master new skills through direct 1-on-1 peer sessions and AI guidance.</p>
+          </div>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <button className="btn btn-gradient btn-sm" onClick={() => setShowDevtaModal(true)}>
+              🤖 Ask Teach Devta AI
+            </button>
+            <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}>
+              + Create Learning Request
+            </button>
+          </div>
         </div>
 
-        {/* Search */}
+        {/* Search Bar */}
         <div className="search-bar-wrapper">
           <span className="search-icon">🔍</span>
           <input
             className="search-bar"
             type="text"
-            placeholder="Search skills, topics, teachers…"
+            placeholder="Search skills, learning topics, questions…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
-        {/* My Learning */}
+        {/* Category Horizontal Scroll-Snap Filter */}
+        <div className="scroll-snap-x" style={{ marginBottom: 28 }}>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              className={`category-chip scroll-snap-item ${activeCategory === cat ? 'active' : ''}`}
+              onClick={() => setActiveCategory(cat)}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Teach Devta AI Quick Banner */}
+        <div className="card card-3d" style={{ padding: 24, marginBottom: 36, background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(239, 68, 68, 0.12) 100%)', borderColor: 'var(--accent-indigo)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div style={{ fontSize: '2.4rem' }}>🤖</div>
+              <div>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                  Have an urgent coding or concept doubt?
+                </h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem' }}>
+                  Teach Devta AI provides instant step-by-step guidance powered by Groq Llama 3.3.
+                </p>
+              </div>
+            </div>
+            <button className="btn btn-gradient btn-sm" onClick={() => setShowDevtaModal(true)}>
+              ⚡ Ask AI Now
+            </button>
+          </div>
+        </div>
+
+        {/* Active Learning Section */}
         <div className="dashboard-section">
           <div className="section-header">
-            <h2 className="section-title">My Learning</h2>
-            <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}>
-              + Create Learning Request
-            </button>
+            <h2 className="section-title">Active Learning Sessions</h2>
+            <span className="badge badge-verified">{activeRequests.length} Active</span>
           </div>
 
-          {activeRequests.length === 0 && (
+          {activeRequests.length === 0 ? (
             <div className="card" style={{ padding: 36, textAlign: 'center', color: 'var(--text-muted)' }}>
-              <p style={{ marginBottom: 16, fontSize: '1rem' }}>No active learning sessions yet.</p>
+              <p style={{ marginBottom: 16, fontSize: '1rem' }}>No active 1-on-1 learning sessions yet.</p>
               <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}>
-                + Create your first learning request
+                + Post Your First Learning Request
               </button>
             </div>
-          )}
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
+              {activeRequests.map((req) => {
+                const linkedChat = myChats.find(
+                  (c) => c.request?._id === req._id || c.skill === req.skill
+                );
+                return (
+                  <div className="card card-3d" key={req._id}>
+                    <div className="card-body">
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                        <span className="badge badge-verified">✓ Teacher Assigned</span>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                          {new Date(req.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: 8, color: 'var(--text-primary)' }}>
+                        {req.skill || req.question}
+                      </h3>
+                      <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: 16 }}>
+                        Teacher: <strong>{req.selectedTeacher?.name ?? 'Assigned Peer'}</strong>
+                      </p>
 
-          {activeRequests.map((req) => {
-            const chat = myChats.find((c) => c.request === req._id);
-            return (
-              <div className="card" key={req._id} style={{ marginBottom: 16 }}>
-                <div className="learning-card-top">
-                  <div>
-                    <div className="learning-card-title">{req.skill || req.question}</div>
-                    <div className="learning-card-teacher">
-                      👤 Teacher: {req.selectedTeacher?.name ?? 'Assigned'}
+                      <div className="progress-bar-wrapper" style={{ marginBottom: 18 }}>
+                        <div className="progress-bar-label">
+                          <span>Learning Progress</span>
+                          <span>60%</span>
+                        </div>
+                        <div className="progress-bar-track">
+                          <div className="progress-bar-fill" style={{ width: '60%' }} />
+                        </div>
+                      </div>
+
+                      {linkedChat && (
+                        <button
+                          className="btn btn-primary btn-sm"
+                          style={{ width: '100%' }}
+                          onClick={() => navigate(`/chat/${linkedChat._id}`)}
+                        >
+                          💬 Open Learning Chat
+                        </button>
+                      )}
                     </div>
                   </div>
-                  <span className="status-badge active">Active</span>
-                </div>
-                <div className="progress-bar-wrapper">
-                  <div className="progress-bar-label">
-                    <span>Session Progress</span>
-                    <span>In Progress</span>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* My Learning Requests List */}
+        <div className="dashboard-section">
+          <div className="section-header">
+            <h2 className="section-title">All Learning Requests</h2>
+            <button className="btn btn-secondary btn-sm" onClick={() => navigate('/requests')}>
+              Manage in Requests Feed →
+            </button>
+          </div>
+
+          {filteredRequests.length === 0 ? (
+            <div className="card" style={{ padding: 32, textAlign: 'center', color: 'var(--text-muted)' }}>
+              No requests found matching &quot;{search}&quot;.
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {filteredRequests.map((req) => (
+                <div className="card card-3d request-card" key={req._id}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, flexWrap: 'wrap', gap: 8 }}>
+                    <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text-primary)' }}>
+                      &ldquo;{req.question}&rdquo;
+                    </div>
+                    <span className={`badge ${req.status === 'open' ? 'badge-pending' : 'badge-verified'}`}>
+                      {req.status === 'open' ? '⏳ Open for Teachers' : '✅ Active'}
+                    </span>
                   </div>
-                  <div className="progress-bar-track">
-                    <div className="progress-bar-fill" style={{ width: '40%' }} />
-                  </div>
-                </div>
-                <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end' }}>
-                  {chat && (
-                    <button className="btn btn-primary btn-sm" onClick={() => navigate(`/chat/${chat._id}`)}>
-                      💬 Open Chat Room
-                    </button>
+
+                  {req.skill && (
+                    <div style={{ fontSize: '0.88rem', color: 'var(--accent-indigo)', fontWeight: 600, marginBottom: 8 }}>
+                      Topic / Skill: {req.skill}
+                    </div>
                   )}
+
+                  <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)', marginBottom: 12 }}>
+                    {req.description || 'No extra notes provided.'}
+                  </p>
+
+                  {/* If offers exist, show quick accept buttons */}
+                  {req.teacherResponses?.length > 0 && req.status === 'open' && (
+                    <div style={{ background: 'var(--surface-inset)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: 14, marginBottom: 14 }}>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
+                        👨‍🏫 {req.teacherResponses.length} Teacher{req.teacherResponses.length > 1 ? 's' : ''} Offered to Teach:
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        {req.teacherResponses.map((item, idx) => {
+                          const teacherUser = item.teacher && typeof item.teacher === 'object' ? item.teacher : { _id: item.teacher, name: 'Teacher', username: 'peer' };
+                          const teacherId = teacherUser._id || item.teacher || item._id;
+                          const teacherName = teacherUser.name || 'Peer Teacher';
+
+                          return (
+                            <div key={item._id || idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--surface)', padding: '8px 12px', borderRadius: 'var(--radius-sm)' }}>
+                              <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{teacherName}</span>
+                              <button
+                                className="btn btn-primary btn-sm"
+                                onClick={() => handleSelectTeacher(req._id, teacherId)}
+                              >
+                                ✓ Accept &amp; Start Chat
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+                    <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                      {req.teacherResponses?.length || 0} teacher offer(s) received
+                    </span>
+                    <button className="btn btn-secondary btn-sm" onClick={() => navigate('/requests')}>
+                      View Details &amp; Offers →
+                    </button>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Teach Devta — Interactive AI Assistant */}
-        <div className="teach-devta-widget">
-          <div className="teach-devta-avatar">🤖</div>
-          <div className="teach-devta-info">
-            <div className="teach-devta-name">Teach Devta AI Assistant</div>
-            <div className="teach-devta-desc">
-              Your personal learning assistant — ask instant questions, get code explanations, and practice concepts.
-            </div>
-          </div>
-          <button className="btn btn-primary btn-sm" onClick={() => setShowDevtaModal(true)}>
-            Ask Teach Devta 🤖
-          </button>
-        </div>
-      </div>
-
-      {/* Create Request Modal */}
-      <Modal show={showModal} onClose={() => setShowModal(false)} title="Create Learning Request">
-        <form onSubmit={handleCreateRequest}>
-          <div className="form-group">
-            <label className="form-label">What do you want to learn?</label>
-            <input
-              className="form-input"
-              type="text"
-              placeholder="e.g. How do pointers work in C?"
-              value={form.question}
-              onChange={(e) => setForm((f) => ({ ...f, question: e.target.value }))}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Details & Context</label>
-            <textarea
-              className="form-textarea"
-              placeholder="Describe in detail what you want help with…"
-              value={form.description}
-              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Skill / Category</label>
-            <select
-              className="form-select"
-              value={form.skill}
-              onChange={(e) => setForm((f) => ({ ...f, skill: e.target.value }))}
-            >
-              <option value="">Select a skill…</option>
-              {['C Programming', 'HTML & CSS', 'JavaScript', 'React.js', 'Python', 'Data Structures'].map((s) => (
-                <option key={s} value={s}>{s}</option>
               ))}
-            </select>
-          </div>
-          <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-            <button type="submit" className="btn btn-primary" disabled={loading}>
-              {loading ? 'Posting…' : 'Post Request'}
-            </button>
-          </div>
-        </form>
-      </Modal>
-
-      {/* Teach Devta AI Modal */}
-      <Modal show={showDevtaModal} onClose={() => setShowDevtaModal(false)} title="Ask Teach Devta AI 🤖">
-        <form onSubmit={handleAskDevta}>
-          <div className="form-group">
-            <label className="form-label">Ask any technical question or topic:</label>
-            <input
-              className="form-input"
-              type="text"
-              placeholder="e.g. Explain stack vs heap memory in C"
-              value={devtaQuestion}
-              onChange={(e) => setDevtaQuestion(e.target.value)}
-              required
-            />
-          </div>
-
-          {devtaLoading && (
-            <div style={{ textAlign: 'center', padding: '16px 0', color: 'var(--primary)' }}>
-              🤖 Teach Devta is thinking…
             </div>
           )}
+        </div>
 
-          {devtaAnswer && (
-            <div className="info-box" style={{ marginBottom: 18, whiteSpace: 'pre-line' }}>
-              {devtaAnswer}
+        {/* ── Modal: Create Learning Request ── */}
+        <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Create Learning Request 📝">
+          <form onSubmit={handleCreateRequest}>
+            <div className="form-group">
+              <label className="form-label">What do you want to learn? *</label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder="e.g. How does Redux Toolkit createSlice work?"
+                value={form.question}
+                onChange={(e) => setForm({ ...form, question: e.target.value })}
+                required
+              />
             </div>
-          )}
 
-          <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" onClick={() => setShowDevtaModal(false)}>Close</button>
-            <button type="submit" className="btn btn-primary" disabled={devtaLoading}>
-              Ask AI
+            <div className="form-group">
+              <label className="form-label">Related Skill or Subject</label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder="e.g. React, JavaScript, Python"
+                value={form.skill}
+                onChange={(e) => setForm({ ...form, skill: e.target.value })}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Details / Specific Obstacle</label>
+              <textarea
+                className="form-textarea"
+                placeholder="Describe what you've tried and what you're stuck on…"
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+              />
+            </div>
+
+            <button type="submit" className="btn btn-primary btn-md" style={{ width: '100%' }} disabled={loading}>
+              {loading ? 'Posting Request…' : '🚀 Post Learning Request'}
             </button>
-          </div>
-        </form>
-      </Modal>
+          </form>
+        </Modal>
 
-      {toast && <div className="toast">{toast}</div>}
+        {/* ── Modal: Ask Teach Devta AI (Groq) ── */}
+        <Modal isOpen={showDevtaModal} onClose={() => setShowDevtaModal(false)} title="Teach Devta AI Assistant 🤖">
+          <form onSubmit={handleAskDevta}>
+            <div className="form-group">
+              <label className="form-label">Ask your question (Powered by Groq Llama 3.3)</label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder="e.g. Explain how async/await works under the hood"
+                value={devtaQuestion}
+                onChange={(e) => setDevtaQuestion(e.target.value)}
+                required
+              />
+            </div>
+
+            <button type="submit" className="btn btn-gradient btn-md" style={{ width: '100%', marginBottom: 16 }} disabled={devtaLoading}>
+              {devtaLoading ? '⚡ Thinking with Groq AI…' : '⚡ Ask Teach Devta'}
+            </button>
+
+            {devtaAnswer && (
+              <div style={{ background: 'var(--surface-inset)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: 18, maxHeight: 380, overflowY: 'auto' }}>
+                <strong style={{ color: 'var(--accent-indigo)', display: 'block', marginBottom: 12 }}>
+                  🤖 Teach Devta AI Answer:
+                </strong>
+                <MarkdownRenderer content={devtaAnswer} />
+              </div>
+            )}
+          </form>
+        </Modal>
+
+        {/* Toast */}
+        {toast && <div className="toast-notification">{toast}</div>}
+      </div>
     </div>
   );
 }

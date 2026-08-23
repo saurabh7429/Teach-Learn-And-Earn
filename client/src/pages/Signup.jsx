@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { register } from '../api';
 import { useAuth } from '../context/AuthContext';
 
@@ -7,7 +7,7 @@ export default function Signup() {
   const navigate = useNavigate();
   const { loginUser } = useAuth();
   const [form, setForm] = useState({ name: '', username: '', email: '', password: '', confirm: '' });
-  const [agreed, setAgreed] = useState(false);
+  const [agreed, setAgreed] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -43,8 +43,12 @@ export default function Signup() {
   return (
     <div className="auth-neo-wrapper page-enter">
       <div className="neo-disc-card neo-disc-lg">
-        <h1 className="neo-auth-title">Sign Up</h1>
-        <p className="neo-auth-subtitle">Create your new account</p>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+          <div className="logo-badge" style={{ fontSize: '1rem', padding: '8px 16px' }}>TL&amp;E</div>
+        </div>
+
+        <h1 className="neo-auth-title">Create Account</h1>
+        <p className="neo-auth-subtitle">Join the peer-to-peer skill exchange platform</p>
 
         <form onSubmit={handleSubmit} style={{ width: '100%' }}>
           {/* Name */}
@@ -90,8 +94,8 @@ export default function Signup() {
           </div>
 
           {/* Password */}
-          <div className="neo-input-group neo-input-focus-red">
-            <span className="neo-input-icon neo-icon-red">🔒</span>
+          <div className="neo-input-group">
+            <span className="neo-input-icon">🔒</span>
             <input
               type="password"
               name="password"
@@ -105,7 +109,7 @@ export default function Signup() {
 
           {/* Confirm Password */}
           <div className="neo-input-group">
-            <span className="neo-input-icon">🔑</span>
+            <span className="neo-input-icon">🛡️</span>
             <input
               type="password"
               name="confirm"
@@ -117,8 +121,8 @@ export default function Signup() {
             />
           </div>
 
-          {/* Terms Checkbox */}
-          <div className="neo-auth-row" style={{ justifyContent: 'center', margin: '14px 0' }}>
+          {/* Agreement toggle */}
+          <div className="neo-auth-row" style={{ justifyContent: 'flex-start' }}>
             <label className="neo-toggle-wrap">
               <input
                 type="checkbox"
@@ -126,24 +130,25 @@ export default function Signup() {
                 onChange={(e) => setAgreed(e.target.checked)}
                 className="neo-toggle-checkbox"
               />
-              <span className="neo-toggle-slider" />
-              <span className="neo-toggle-label">I agree to Terms &amp; Privacy</span>
+              <span className="neo-toggle-label">
+                I accept the <a href="#" style={{ color: 'var(--primary)', fontWeight: 600 }}>Terms of Service</a> &amp; Privacy Policy
+              </span>
             </label>
           </div>
 
           {error && <div className="neo-error-badge">{error}</div>}
 
-          {/* Submit Button */}
+          {/* Submit */}
           <button type="submit" className="neo-btn-primary" disabled={loading}>
-            {loading ? 'REGISTERING…' : 'SIGN UP'}
+            {loading ? 'CREATING ACCOUNT…' : 'START LEARNING & TEACHING 🚀'}
           </button>
 
-          {/* Login Footer */}
+          {/* Sign In Link */}
           <p className="neo-auth-footer">
-            Already have an account?{' '}
-            <span className="neo-link-red" onClick={() => navigate('/login')}>
-              Log in
-            </span>
+            Already have an account?
+            <Link to="/login" className="neo-auth-link">
+              Sign In
+            </Link>
           </p>
         </form>
       </div>

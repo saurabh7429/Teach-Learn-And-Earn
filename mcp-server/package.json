@@ -1,0 +1,14 @@
+{
+  "name": "tle-mcp-server",
+  "version": "1.0.0",
+  "description": "Model Context Protocol (MCP) Token-Saving Server for Teach, Learn & Earn (TL&E)",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "dotenv": "^16.4.7"
+  }
+}

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-export default function Navbar() {
+export default function Navbar({ onOpenAI }) {
   const { user, logoutUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -72,6 +72,16 @@ export default function Navbar() {
 
         {/* Right actions */}
         <div className="navbar-actions">
+          {/* AI Quick Launcher Button */}
+          <button
+            className="ai-launcher-btn"
+            onClick={onOpenAI}
+            title="Ask Teach Devta AI (Groq)"
+            aria-label="Open Teach Devta AI"
+          >
+            🤖
+          </button>
+
           {/* Theme Toggle Button */}
           <button
             className="theme-toggle-btn"
@@ -84,7 +94,11 @@ export default function Navbar() {
 
           {user ? (
             <>
-              <button className="notif-btn" title="Notifications">
+              <button 
+                className="notif-btn" 
+                title="Notifications"
+                onClick={() => navigate('/requests')}
+              >
                 🔔
                 <span className="notif-badge">3</span>
               </button>
