@@ -4,14 +4,41 @@ require('dotenv').config();
 const dns = require('dns');
 try { dns.setServers(['8.8.8.8', '1.1.1.1']); } catch (e) {}
 
+const http    = require('http');
 const express = require('express');
+const { Server } = require('socket.io');
 const mongoose = require('mongoose');
-const cors = require('cors');
+const cors    = require('cors');
 
-const app = express();
+const app    = express();
+const server = http.createServer(app);
+
+// ── Socket.IO setup ──
+const io = new Server(server, {
+  cors: {
+    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    credentials: true,
+  },
+});
+
+// Make io accessible in routes
+app.set('io', io);
+
+io.on('connection', (socket) => {
+  // Join a specific chat room
+  socket.on('join_chat', (chatId) => {
+    socket.join(chatId);
+  });
+
+  socket.on('leave_chat', (chatId) => {
+    socket.leave(chatId);
+  });
+
+  socket.on('disconnect', () => {});
+});
 
 // ── Middleware ──
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174'], credentials: true }));
 app.use(express.json());
 
 // ── Routes ──
@@ -32,9 +59,9 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong', error: err.message });
 });
 
-// ── Connect to MongoDB (Triple Fail-safe: Atlas -> Local -> Memory Server) ──
+// ── Connect to MongoDB & Start Server ──
 const connectDB = async () => {
-  const primaryURI = process.env.MONGO_URI;
+  const primaryURI  = process.env.MONGO_URI;
   const fallbackURI = process.env.MONGO_URI_LOCAL || 'mongodb://127.0.0.1:27017/tledb';
 
   try {
@@ -42,27 +69,20 @@ const connectDB = async () => {
     await mongoose.connect(primaryURI, { serverSelectionTimeoutMS: 4000, family: 4 });
     console.log('✅ MongoDB Atlas connected successfully');
   } catch (err) {
-    console.warn('⚠️ MongoDB Atlas connection error:', err.message);
+    console.warn('⚠️ MongoDB Atlas error:', err.message);
     try {
-      console.log('🔄 Trying local MongoDB:', fallbackURI);
       await mongoose.connect(fallbackURI, { serverSelectionTimeoutMS: 3000 });
-      console.log('✅ Local MongoDB connected successfully');
+      console.log('✅ Local MongoDB connected');
     } catch (localErr) {
-      console.warn('⚠️ Local MongoDB unavailable. Launching In-Memory Database...');
-      try {
-        const { MongoMemoryServer } = require('mongodb-memory-server');
-        const mongoServer = await MongoMemoryServer.create();
-        const memUri = mongoServer.getUri();
-        await mongoose.connect(memUri);
-        console.log('✅ In-Memory MongoDB connected successfully');
-      } catch (memErr) {
-        console.error('❌ Could not start database:', memErr.message);
-        process.exit(1);
-      }
+      console.warn('⚠️ Local MongoDB unavailable — launching in-memory DB...');
+      const { MongoMemoryServer } = require('mongodb-memory-server');
+      const mongoServer = await MongoMemoryServer.create();
+      await mongoose.connect(mongoServer.getUri());
+      console.log('✅ In-Memory MongoDB connected');
     }
   }
 
-  app.listen(process.env.PORT || 5000, () =>
+  server.listen(process.env.PORT || 5000, () =>
     console.log(`🚀 Server running on http://localhost:${process.env.PORT || 5000}`)
   );
 };

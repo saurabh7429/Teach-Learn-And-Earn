@@ -44,23 +44,15 @@ router.get('/my', protect, async (req, res) => {
 });
 
 // @route  GET /api/requests/teaching
-// @desc   Get open requests matching my verified skills (as teacher)
+// @desc   Get all open requests available for this teacher to offer on
 // @access Private
 router.get('/teaching', protect, async (req, res) => {
   try {
-    // Get my verified skills
-    const mySkills = await Skill.find({ teacher: req.user._id, verified: true }).select('name');
-    const skillNames = mySkills.map((s) => s.name.toLowerCase());
-
-    // Return all open requests that match my skills (or all open if no skills yet)
-    let query = { status: 'open', student: { $ne: req.user._id } };
-    if (skillNames.length > 0) {
-      query.skill = {
-        $in: skillNames.map((n) => new RegExp(n, 'i')),
-      };
-    }
-
-    const requests = await LearningRequest.find(query)
+    // Return ALL open requests that are not the logged-in user's own request
+    const requests = await LearningRequest.find({
+      status: 'open',
+      student: { $ne: req.user._id },
+    })
       .populate('student', 'name username')
       .sort('-createdAt');
     res.json(requests);

@@ -25,8 +25,8 @@ export default function Learn({ onOpenAI }) {
   const categories = ['All', 'React & Frontend', 'Backend & Node', 'AI & Groq', '3D Design & CSS', 'Data Structures'];
 
   useEffect(() => {
-    getMyRequests().then((r) => setMyRequests(r.data)).catch(() => {});
-    getChats().then((r) => setMyChats(r.data)).catch(() => {});
+    getMyRequests().then((r) => setMyRequests(r.data)).catch(() => setMyRequests([]));
+    getChats().then((r) => setMyChats(r.data)).catch(() => setMyChats([]));
   }, []);
 
   const showToast = (msg) => {
@@ -145,9 +145,9 @@ export default function Learn({ onOpenAI }) {
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                   Have an urgent coding or concept doubt?
                 </h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem' }}>
-                  Teach Devta AI provides instant step-by-step guidance powered by Groq Llama 3.3.
-                </p>
+          <div style={{ color: 'var(--text-secondary)', fontSize: '0.92rem' }}>
+                  Ask Teach Devta any coding or learning doubt — get instant detailed answers.
+                </div>
               </div>
             </div>
             <button className="btn btn-gradient btn-sm" onClick={() => setShowDevtaModal(true)}>
@@ -228,9 +228,16 @@ export default function Learn({ onOpenAI }) {
             </button>
           </div>
 
-          {filteredRequests.length === 0 ? (
+          {myRequests.length === 0 ? (
             <div className="card" style={{ padding: 32, textAlign: 'center', color: 'var(--text-muted)' }}>
-              No requests found matching &quot;{search}&quot;.
+              <p style={{ marginBottom: 16, fontSize: '1rem' }}>You haven&apos;t posted any learning requests yet.</p>
+              <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}>
+                + Post Your First Request
+              </button>
+            </div>
+          ) : filteredRequests.length === 0 ? (
+            <div className="card" style={{ padding: 32, textAlign: 'center', color: 'var(--text-muted)' }}>
+              No requests found matching "{search}".
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -343,7 +350,7 @@ export default function Learn({ onOpenAI }) {
         <Modal isOpen={showDevtaModal} onClose={() => setShowDevtaModal(false)} title="Teach Devta AI Assistant 🤖">
           <form onSubmit={handleAskDevta}>
             <div className="form-group">
-              <label className="form-label">Ask your question (Powered by Groq Llama 3.3)</label>
+              <label className="form-label">Ask Teach Devta your question</label>
               <input
                 className="form-input"
                 type="text"
@@ -355,7 +362,7 @@ export default function Learn({ onOpenAI }) {
             </div>
 
             <button type="submit" className="btn btn-gradient btn-md" style={{ width: '100%', marginBottom: 16 }} disabled={devtaLoading}>
-              {devtaLoading ? '⚡ Thinking with Groq AI…' : '⚡ Ask Teach Devta'}
+              {devtaLoading ? '⚡ Thinking…' : '⚡ Ask Teach Devta'}
             </button>
 
             {devtaAnswer && (

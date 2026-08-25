@@ -4,7 +4,7 @@ const Chat        = require('../models/Chat');
 const { protect } = require('../middleware/auth');
 
 // @route  GET /api/chats
-// @desc   Get all my chats
+// @desc   Get MY chats only (filtered by logged-in user)
 // @access Private
 router.get('/', protect, async (req, res) => {
   try {
@@ -18,7 +18,7 @@ router.get('/', protect, async (req, res) => {
 });
 
 // @route  GET /api/chats/:id
-// @desc   Get a single chat with messages
+// @desc   Get a single chat (only if user is a participant)
 // @access Private
 router.get('/:id', protect, async (req, res) => {
   try {
@@ -40,7 +40,7 @@ router.get('/:id', protect, async (req, res) => {
 });
 
 // @route  POST /api/chats/:id/message
-// @desc   Send a message in a chat
+// @desc   Send a message — broadcasts via Socket.IO to room
 // @access Private
 router.post('/:id/message', protect, async (req, res) => {
   try {
@@ -61,6 +61,12 @@ router.post('/:id/message', protect, async (req, res) => {
     const updated = await Chat.findById(chat._id)
       .populate('participants', 'name username')
       .populate('messages.sender', 'name username');
+
+    // Emit the new message to everyone else in this chat room
+    const io = req.app.get('io');
+    if (io) {
+      io.to(chat._id.toString()).emit('new_message', updated);
+    }
 
     res.status(201).json(updated);
   } catch (err) {

@@ -158,7 +158,7 @@ export default function Teach({ onOpenAI }) {
               <div style={{ fontSize: '2.4rem' }}>🛡️</div>
               <div>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                  Teach Devta AI Verification Engine
+                  Skill Verification by Teach Devta
                 </h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem' }}>
                   Verified teachers earn verified badges and receive priority placement when responding to student learning requests.
@@ -289,7 +289,7 @@ export default function Teach({ onOpenAI }) {
             <div style={{ textAlign: 'center', padding: '40px 20px' }}>
               <div className="spinner" style={{ margin: '0 auto 16px' }} />
               <p style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
-                Generating dynamic assessment questions with Groq Llama 3.3…
+                Generating your skill assessment questions…
               </p>
               <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                 Analyzing {selectedSkillForEval?.name} topics
@@ -324,7 +324,7 @@ export default function Teach({ onOpenAI }) {
                     Question {currentStep + 1} of {quizQuestions.length}
                   </span>
                   <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                    Groq AI Evaluation
+                    Teach Devta Assessment
                   </span>
                 </div>
 

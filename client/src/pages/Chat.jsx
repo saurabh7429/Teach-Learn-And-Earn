@@ -1,24 +1,45 @@
 import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { io } from 'socket.io-client';
 import { getChat, sendMessage as apiSendMessage } from '../api';
 import { useAuth } from '../context/AuthContext';
 
+let socket;
+
 export default function Chat() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const [chat, setChat] = useState(null);
-  const [input, setInput] = useState('');
+  const { id }    = useParams();
+  const navigate  = useNavigate();
+  const { user }  = useAuth();
+  const [chat, setChat]       = useState(null);
+  const [input, setInput]     = useState('');
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef(null);
-  const inputRef = useRef(null);
 
+  // ── Socket.IO setup ──
+  useEffect(() => {
+    // Connect to server socket
+    socket = io('http://localhost:5000', { transports: ['websocket', 'polling'] });
+    socket.emit('join_chat', id);
+
+    // Listen for real-time messages from other participants
+    socket.on('new_message', (updatedChat) => {
+      setChat(updatedChat);
+    });
+
+    return () => {
+      socket.emit('leave_chat', id);
+      socket.disconnect();
+    };
+  }, [id]);
+
+  // ── Load initial chat data ──
   useEffect(() => {
     getChat(id)
       .then((r) => setChat(r.data))
       .catch(() => navigate('/learn'));
   }, [id]);
 
+  // ── Auto-scroll to latest message ──
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chat?.messages]);
@@ -33,6 +54,8 @@ export default function Chat() {
     setSending(true);
     setInput('');
     try {
+      // POST to server — server will emit via Socket.IO to other participant
+      // We also update local state immediately (optimistic)
       const { data } = await apiSendMessage(id, text);
       setChat(data);
     } catch {
@@ -94,11 +117,11 @@ export default function Chat() {
               <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.95rem', margin: 'auto' }}>
                 <div style={{ fontSize: '2.5rem', marginBottom: 10 }}>👋</div>
                 <p style={{ fontWeight: 600, color: 'var(--text-primary)' }}>No messages yet.</p>
-                <p>Say hello to your peer to begin this learning session!</p>
+                <p>Say hello to your peer to start this learning session!</p>
               </div>
             ) : (
               chat.messages.map((msg) => {
-                const isMe = msg.sender?._id === user?._id;
+                const isMe    = msg.sender?._id === user?._id;
                 const initial = msg.sender?.name?.[0]?.toUpperCase() ?? '?';
                 return (
                   <div className={`chat-msg ${isMe ? 'me' : ''}`} key={msg._id || Math.random()}>
@@ -123,10 +146,9 @@ export default function Chat() {
             }}
           >
             <input
-              ref={inputRef}
               className="chat-input-field"
               type="text"
-              placeholder="Type your message (Press Enter to send)…"
+              placeholder="Type your message (Enter to send)…"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}

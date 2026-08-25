@@ -6,7 +6,7 @@ export default function TeachDevtaDrawer({ isOpen, onClose, initialQuery = '' })
   const [messages, setMessages] = useState([
     {
       sender: 'devta',
-      text: 'Namaste! I am **Teach Devta AI** (powered by Groq Llama 3.3). How can I assist your learning or teaching journey today?',
+      text: 'Namaste! 🙏 I am **Teach Devta** — your personal learning assistant. How can I help your learning or teaching journey today?',
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
@@ -77,8 +77,8 @@ export default function TeachDevtaDrawer({ isOpen, onClose, initialQuery = '' })
           <div className="devta-drawer-title-wrap">
             <div className="devta-ai-avatar-badge">🤖</div>
             <div>
-              <h3 className="devta-drawer-title">Teach Devta AI</h3>
-              <span className="devta-drawer-sub">Groq Llama 3.3 • Formatted Markdown &amp; Code</span>
+              <h3 className="devta-drawer-title">Teach Devta</h3>
+              <span className="devta-drawer-sub">Your AI Learning Assistant • Always Here to Help</span>
             </div>
           </div>
           <button className="devta-drawer-close" onClick={onClose} aria-label="Close Drawer">
