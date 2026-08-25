@@ -13,6 +13,8 @@ const chatSchema = new mongoose.Schema(
     skillRef:     { type: mongoose.Schema.Types.ObjectId, ref: 'Skill', default: null },
     request:      { type: mongoose.Schema.Types.ObjectId, ref: 'LearningRequest', default: null },
     messages:     [messageSchema],
+    status:       { type: String, enum: ['active', 'completed'], default: 'active' },
+    completedAt:  { type: Date, default: null },
   },
   { timestamps: true }
 );

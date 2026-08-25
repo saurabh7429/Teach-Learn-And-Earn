@@ -1,28 +1,27 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMyRequests, getChats, createRequest, askDevtaAI, selectTeacher } from '../api';
+import { getMyRequests, getChats, createRequest, askDevtaAI, selectTeacher, enhanceRequest } from '../api';
 import Modal from '../components/Modal';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 
 export default function Learn({ onOpenAI }) {
   const navigate = useNavigate();
   const [myRequests, setMyRequests] = useState([]);
-  const [myChats, setMyChats] = useState([]);
-  const [search, setSearch] = useState('');
-  const [activeCategory, setActiveCategory] = useState('All');
-  const [showModal, setShowModal] = useState(false);
+  const [myChats, setMyChats]       = useState([]);
+  const [search, setSearch]         = useState('');
+  const [showModal, setShowModal]   = useState(false);
   const [showDevtaModal, setShowDevtaModal] = useState(false);
-  
-  // Real Groq AI State
+
+  // AI ask state
   const [devtaQuestion, setDevtaQuestion] = useState('');
-  const [devtaAnswer, setDevtaAnswer] = useState('');
-  const [devtaLoading, setDevtaLoading] = useState(false);
+  const [devtaAnswer, setDevtaAnswer]     = useState('');
+  const [devtaLoading, setDevtaLoading]   = useState(false);
 
-  const [form, setForm] = useState({ question: '', description: '', skill: '' });
-  const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState('');
-
-  const categories = ['All', 'React & Frontend', 'Backend & Node', 'AI & Groq', '3D Design & CSS', 'Data Structures'];
+  // Create-request form
+  const [form, setForm]           = useState({ question: '', description: '', skill: '' });
+  const [loading, setLoading]     = useState(false);
+  const [enhancing, setEnhancing] = useState(false);
+  const [toast, setToast]         = useState('');
 
   useEffect(() => {
     getMyRequests().then((r) => setMyRequests(r.data)).catch(() => setMyRequests([]));
@@ -32,6 +31,28 @@ export default function Learn({ onOpenAI }) {
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(''), 3500);
+  };
+
+  // ── AI Enhance request text ──
+  const handleEnhance = async () => {
+    if (!form.question.trim()) {
+      showToast('Please write your question first before enhancing.');
+      return;
+    }
+    setEnhancing(true);
+    try {
+      const { data } = await enhanceRequest({
+        question:    form.question,
+        description: form.description,
+        skill:       form.skill,
+      });
+      setForm({ question: data.question, description: data.description, skill: data.skill });
+      showToast('✨ Request refined by Teach Devta!');
+    } catch {
+      showToast('Enhancement failed. Please try again.');
+    } finally {
+      setEnhancing(false);
+    }
   };
 
   const handleCreateRequest = async (e) => {
@@ -61,20 +82,18 @@ export default function Learn({ onOpenAI }) {
     }
   };
 
-  // Real Groq AI Teach Devta Call
   const handleAskDevta = async (e) => {
     e.preventDefault();
     if (!devtaQuestion.trim()) return;
     setDevtaLoading(true);
     setDevtaAnswer('');
-
     try {
       const res = await askDevtaAI({ question: devtaQuestion });
       setDevtaAnswer(res.data.answer);
     } catch (err) {
       setDevtaAnswer(
-        err.response?.data?.fallbackAnswer || 
-        'Teach Devta AI is currently busy. Please try asking again shortly!'
+        err.response?.data?.fallbackAnswer ||
+        'Teach Devta is currently busy. Please try again shortly!'
       );
     } finally {
       setDevtaLoading(false);
@@ -85,12 +104,10 @@ export default function Learn({ onOpenAI }) {
     ['selected', 'active'].includes(r.status)
   );
 
-  const filteredRequests = myRequests.filter((req) => {
-    const matchesSearch = 
-      (req.question || '').toLowerCase().includes(search.toLowerCase()) ||
-      (req.skill || '').toLowerCase().includes(search.toLowerCase());
-    return matchesSearch;
-  });
+  const filteredRequests = myRequests.filter((req) =>
+    (req.question || '').toLowerCase().includes(search.toLowerCase()) ||
+    (req.skill || '').toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="page-body page-enter">
@@ -103,7 +120,7 @@ export default function Learn({ onOpenAI }) {
           </div>
           <div style={{ display: 'flex', gap: 12 }}>
             <button className="btn btn-gradient btn-sm" onClick={() => setShowDevtaModal(true)}>
-              🤖 Ask Teach Devta AI
+              🤖 Ask Teach Devta
             </button>
             <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}>
               + Create Learning Request
@@ -123,20 +140,7 @@ export default function Learn({ onOpenAI }) {
           />
         </div>
 
-        {/* Category Horizontal Scroll-Snap Filter */}
-        <div className="scroll-snap-x" style={{ marginBottom: 28 }}>
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              className={`category-chip scroll-snap-item ${activeCategory === cat ? 'active' : ''}`}
-              onClick={() => setActiveCategory(cat)}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        {/* Teach Devta AI Quick Banner */}
+        {/* Teach Devta Quick Banner */}
         <div className="card card-3d" style={{ padding: 24, marginBottom: 36, background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(239, 68, 68, 0.12) 100%)', borderColor: 'var(--accent-indigo)' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -145,13 +149,13 @@ export default function Learn({ onOpenAI }) {
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                   Have an urgent coding or concept doubt?
                 </h3>
-          <div style={{ color: 'var(--text-secondary)', fontSize: '0.92rem' }}>
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.92rem' }}>
                   Ask Teach Devta any coding or learning doubt — get instant detailed answers.
                 </div>
               </div>
             </div>
             <button className="btn btn-gradient btn-sm" onClick={() => setShowDevtaModal(true)}>
-              ⚡ Ask AI Now
+              ⚡ Ask Now
             </button>
           </div>
         </div>
@@ -191,17 +195,6 @@ export default function Learn({ onOpenAI }) {
                       <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: 16 }}>
                         Teacher: <strong>{req.selectedTeacher?.name ?? 'Assigned Peer'}</strong>
                       </p>
-
-                      <div className="progress-bar-wrapper" style={{ marginBottom: 18 }}>
-                        <div className="progress-bar-label">
-                          <span>Learning Progress</span>
-                          <span>60%</span>
-                        </div>
-                        <div className="progress-bar-track">
-                          <div className="progress-bar-fill" style={{ width: '60%' }} />
-                        </div>
-                      </div>
-
                       {linkedChat && (
                         <button
                           className="btn btn-primary btn-sm"
@@ -222,7 +215,7 @@ export default function Learn({ onOpenAI }) {
         {/* My Learning Requests List */}
         <div className="dashboard-section">
           <div className="section-header">
-            <h2 className="section-title">All Learning Requests</h2>
+            <h2 className="section-title">All My Learning Requests</h2>
             <button className="btn btn-secondary btn-sm" onClick={() => navigate('/requests')}>
               Manage in Requests Feed →
             </button>
@@ -237,7 +230,7 @@ export default function Learn({ onOpenAI }) {
             </div>
           ) : filteredRequests.length === 0 ? (
             <div className="card" style={{ padding: 32, textAlign: 'center', color: 'var(--text-muted)' }}>
-              No requests found matching "{search}".
+              No requests found matching &quot;{search}&quot;.
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -262,7 +255,7 @@ export default function Learn({ onOpenAI }) {
                     {req.description || 'No extra notes provided.'}
                   </p>
 
-                  {/* If offers exist, show quick accept buttons */}
+                  {/* Quick accept teacher offers */}
                   {req.teacherResponses?.length > 0 && req.status === 'open' && (
                     <div style={{ background: 'var(--surface-inset)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: 14, marginBottom: 14 }}>
                       <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
@@ -270,10 +263,9 @@ export default function Learn({ onOpenAI }) {
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         {req.teacherResponses.map((item, idx) => {
-                          const teacherUser = item.teacher && typeof item.teacher === 'object' ? item.teacher : { _id: item.teacher, name: 'Teacher', username: 'peer' };
-                          const teacherId = teacherUser._id || item.teacher || item._id;
+                          const teacherUser = item.teacher && typeof item.teacher === 'object' ? item.teacher : { _id: item.teacher };
+                          const teacherId   = teacherUser._id || item.teacher || item._id;
                           const teacherName = teacherUser.name || 'Peer Teacher';
-
                           return (
                             <div key={item._id || idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--surface)', padding: '8px 12px', borderRadius: 'var(--radius-sm)' }}>
                               <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{teacherName}</span>
@@ -334,11 +326,22 @@ export default function Learn({ onOpenAI }) {
               <label className="form-label">Details / Specific Obstacle</label>
               <textarea
                 className="form-textarea"
-                placeholder="Describe what you've tried and what you're stuck on…"
+                placeholder="Describe what you've tried and what you're stuck on… (optional)"
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
               />
             </div>
+
+            {/* AI Enhance button */}
+            <button
+              type="button"
+              className="btn btn-gradient btn-sm"
+              style={{ width: '100%', marginBottom: 12 }}
+              disabled={enhancing || !form.question.trim()}
+              onClick={handleEnhance}
+            >
+              {enhancing ? '✨ Enhancing…' : '✨ AI Enhance Request'}
+            </button>
 
             <button type="submit" className="btn btn-primary btn-md" style={{ width: '100%' }} disabled={loading}>
               {loading ? 'Posting Request…' : '🚀 Post Learning Request'}
@@ -346,8 +349,8 @@ export default function Learn({ onOpenAI }) {
           </form>
         </Modal>
 
-        {/* ── Modal: Ask Teach Devta AI (Groq) ── */}
-        <Modal isOpen={showDevtaModal} onClose={() => setShowDevtaModal(false)} title="Teach Devta AI Assistant 🤖">
+        {/* ── Modal: Ask Teach Devta ── */}
+        <Modal isOpen={showDevtaModal} onClose={() => setShowDevtaModal(false)} title="Teach Devta 🤖">
           <form onSubmit={handleAskDevta}>
             <div className="form-group">
               <label className="form-label">Ask Teach Devta your question</label>
@@ -367,9 +370,21 @@ export default function Learn({ onOpenAI }) {
 
             {devtaAnswer && (
               <div style={{ background: 'var(--surface-inset)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: 18, maxHeight: 380, overflowY: 'auto' }}>
-                <strong style={{ color: 'var(--accent-indigo)', display: 'block', marginBottom: 12 }}>
-                  🤖 Teach Devta AI Answer:
-                </strong>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                  <strong style={{ color: 'var(--accent-indigo)' }}>
+                    🤖 Teach Devta:
+                  </strong>
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-xs"
+                    onClick={() => {
+                      navigator.clipboard.writeText(devtaAnswer);
+                      showToast('✓ Copied to clipboard!');
+                    }}
+                  >
+                    📋 Copy Text
+                  </button>
+                </div>
                 <MarkdownRenderer content={devtaAnswer} />
               </div>
             )}

@@ -12,6 +12,7 @@ export default function TeachDevtaDrawer({ isOpen, onClose, initialQuery = '' })
   ]);
   const [input, setInput] = useState(initialQuery);
   const [loading, setLoading] = useState(false);
+  const [copiedIdx, setCopiedIdx] = useState(null);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -25,6 +26,12 @@ export default function TeachDevtaDrawer({ isOpen, onClose, initialQuery = '' })
   }, [messages, loading]);
 
   if (!isOpen) return null;
+
+  const handleCopyText = (text, idx) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIdx(idx);
+    setTimeout(() => setCopiedIdx(null), 2000);
+  };
 
   const handleSend = async (textToSend) => {
     const q = (textToSend || input).trim();
@@ -109,6 +116,22 @@ export default function TeachDevtaDrawer({ isOpen, onClose, initialQuery = '' })
             >
               {m.sender === 'devta' && <span className="devta-mini-avatar">🤖</span>}
               <div className={`devta-msg-bubble ${m.sender === 'user' ? 'user-bubble' : 'devta-bubble'}`}>
+                {m.sender === 'devta' && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: 6 }}>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--accent-indigo)' }}>
+                      🤖 Teach Devta
+                    </span>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-xs"
+                      style={{ fontSize: '0.72rem', padding: '3px 8px', borderRadius: 'var(--radius-sm)' }}
+                      onClick={() => handleCopyText(m.text, i)}
+                      title="Copy full text to paste in chat"
+                    >
+                      {copiedIdx === i ? '✓ Copied!' : '📋 Copy Text'}
+                    </button>
+                  </div>
+                )}
                 <div className="devta-msg-content">
                   {m.sender === 'devta' ? (
                     <MarkdownRenderer content={m.text} />

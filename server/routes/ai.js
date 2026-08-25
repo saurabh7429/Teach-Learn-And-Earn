@@ -1,7 +1,7 @@
 const express = require('express');
 const router  = express.Router();
 const { protect } = require('../middleware/auth');
-const { askTeachDevta, generateSkillQuiz } = require('../services/groqService');
+const { askTeachDevta, generateSkillQuiz, enhanceLearningRequest } = require('../services/groqService');
 
 // @route   POST /api/ai/ask
 // @desc    Ask Teach Devta — requires login
@@ -21,6 +21,24 @@ router.post('/ask', protect, async (req, res) => {
       message: 'Failed to process question',
       fallbackAnswer: 'Teach Devta is currently busy. Please try again shortly!',
     });
+  }
+});
+
+// @route   POST /api/ai/enhance-request
+// @desc    AI-refine a student's learning request text
+// @access  Private
+router.post('/enhance-request', protect, async (req, res) => {
+  try {
+    const { question, description, skill } = req.body;
+    if (!question || !question.trim()) {
+      return res.status(400).json({ message: 'Question is required' });
+    }
+
+    const enhanced = await enhanceLearningRequest(question.trim(), description || '', skill || '');
+    res.json(enhanced);
+  } catch (error) {
+    console.error('Enhance request error:', error.message);
+    res.status(500).json({ message: 'Enhancement failed. Please try again.' });
   }
 });
 

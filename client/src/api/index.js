@@ -22,23 +22,26 @@ export const verifySkill    = (id)   => api.put(`/skills/${id}/verify`);
 export const deleteSkill    = (id)   => api.delete(`/skills/${id}`);
 
 // Requests
-export const createRequest   = (data) => api.post('/requests', data);
-export const getMyRequests   = ()     => api.get('/requests/my');
-export const getTeachingReqs = ()     => api.get('/requests/teaching');
-export const offerTeach      = (id)   => api.post(`/requests/${id}/offer`);
-export const selectTeacher   = (id, teacherId) => api.post(`/requests/${id}/select`, { teacherId });
+export const createRequest    = (data)             => api.post('/requests', data);
+export const getMyRequests    = ()                 => api.get('/requests/my');
+export const getTeachingReqs  = ()                 => api.get('/requests/teaching');
+export const getRequestsBySkill = (skill)          => api.get(`/requests/by-skill/${encodeURIComponent(skill)}`);
+export const offerTeach       = (id)               => api.post(`/requests/${id}/offer`);
+export const selectTeacher    = (id, teacherId)    => api.post(`/requests/${id}/select`, { teacherId });
+export const clearAllRequests = ()                 => api.delete('/requests/clear-all');
 
 // Chats
-export const getChats      = ()      => api.get('/chats');
-export const getChat       = (id)    => api.get(`/chats/${id}`);
-export const sendMessage   = (id, content) => api.post(`/chats/${id}/message`, { content });
+export const getChats      = ()               => api.get('/chats');
+export const getChat       = (id)             => api.get(`/chats/${id}`);
+export const sendMessage   = (id, content)    => api.post(`/chats/${id}/message`, { content });
+export const completeChat  = (id)             => api.patch(`/chats/${id}/complete`);
 
 // Progress
-export const getProgress   = ()      => api.get('/progress');
+export const getProgress   = () => api.get('/progress');
 
-// AI (Teach Devta / Groq)
-export const askDevtaAI       = (data) => api.post('/ai/ask', data);
+// AI (Teach Devta)
+export const askDevtaAI        = (data) => api.post('/ai/ask', data);
 export const generateDevtaQuiz = (data) => api.post('/ai/generate-quiz', data);
+export const enhanceRequest    = (data) => api.post('/ai/enhance-request', data);
 
 export default api;
-

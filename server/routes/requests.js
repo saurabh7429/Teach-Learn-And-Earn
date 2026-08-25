@@ -1,9 +1,9 @@
 const express         = require('express');
 const router          = express.Router();
 const LearningRequest = require('../models/LearningRequest');
-const Skill           = require('../models/Skill');
 const Chat            = require('../models/Chat');
 const { protect }     = require('../middleware/auth');
+
 
 // @route  POST /api/requests
 // @desc   Create a learning request (student)
@@ -56,6 +56,69 @@ router.get('/teaching', protect, async (req, res) => {
       .populate('student', 'name username')
       .sort('-createdAt');
     res.json(requests);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// @route  GET /api/requests/by-skill/:skill
+// @desc   Get both active students and open requests for a specific skill
+// @access Private
+router.get('/by-skill/:skill', protect, async (req, res) => {
+  try {
+    const skillQuery = new RegExp(req.params.skill, 'i');
+
+    // 1. Active students assigned to this teacher for this skill
+    const activeRequests = await LearningRequest.find({
+      selectedTeacher: req.user._id,
+      status: { $in: ['selected', 'active'] },
+      $or: [{ skill: skillQuery }, { question: skillQuery }],
+    })
+      .populate('student', 'name username')
+      .sort('-updatedAt');
+
+    const reqIds = activeRequests.map((r) => r._id);
+    const chats = await Chat.find({
+      request: { $in: reqIds },
+      participants: req.user._id,
+    });
+
+    const activeStudents = activeRequests.map((r) => {
+      const c = chats.find(
+        (chat) => chat.request && chat.request.toString() === r._id.toString()
+      );
+      return {
+        ...r.toObject(),
+        chatId: c ? c._id : null,
+      };
+    });
+
+    // 2. Open requests seeking a teacher
+    const openRequests = await LearningRequest.find({
+      status: 'open',
+      student: { $ne: req.user._id },
+      $or: [{ skill: skillQuery }, { question: skillQuery }],
+    })
+      .populate('student', 'name username')
+      .sort('-createdAt');
+
+    res.json({
+      activeStudents,
+      openRequests,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// @route  DELETE /api/requests/clear-all
+// @desc   Delete ALL learning requests + their chats (for cleanup)
+// @access Private — ADMIN/DEV USE
+router.delete('/clear-all', protect, async (req, res) => {
+  try {
+    await LearningRequest.deleteMany({});
+    await require('../models/Chat').deleteMany({});
+    res.json({ message: 'All requests and chats cleared.' });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -134,7 +197,7 @@ router.post('/:id/select', protect, async (req, res) => {
       });
     }
 
-    const populated = await request
+    const populated = await LearningRequest.findById(request._id)
       .populate('student', 'name username')
       .populate('teacherResponses.teacher', 'name username')
       .populate('selectedTeacher', 'name username');

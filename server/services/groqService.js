@@ -1,6 +1,6 @@
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-const DEFAULT_MODEL = 'openai/gpt-oss-120b';
-const FALLBACK_MODEL = 'openai/gpt-oss-20b';
+const DEFAULT_MODEL = 'openai/gpt-oss-20b';
+const FALLBACK_MODEL = 'openai/gpt-oss-120b';
 
 /**
  * Send request to Groq API with automatic fallback
@@ -178,8 +178,47 @@ Make questions practical, testing real knowledge rather than trivial trivia.`;
   }
 }
 
+
+/**
+ * AI-enhance a student's learning request for clarity and professionalism.
+ * If description is empty, leave it empty. Only polish — never fabricate.
+ */
+async function enhanceLearningRequest(question, description = '', skill = '') {
+  const systemPrompt = `You are a helpful assistant that refines student learning requests on an educational platform.
+Rules:
+- Make the question clear, concise, and professional — fix grammar and vague wording.
+- Do NOT add fictional details. Only enhance what the student wrote.
+- If description is empty or blank, return it as empty string (do not invent content).
+- If description has text, make it clearer and more specific. Keep it brief (max 2-3 sentences).
+- Suggest the most relevant skill/technology tag if not provided, otherwise keep or slightly correct the existing one.
+- No profanity or off-topic content.
+- Return ONLY a valid JSON object: { "question": "...", "description": "...", "skill": "..." }`;
+
+  const userContent = `Question: ${question}\nDescription: ${description || '(empty)'}\nSkill: ${skill || '(not specified)'}`;
+
+  const messages = [
+    { role: 'system', content: systemPrompt },
+    { role: 'user', content: userContent },
+  ];
+
+  try {
+    const rawJson = await callGroqAPI(messages, 0.2, 300, true);
+    const parsed = JSON.parse(rawJson);
+    return {
+      question:    parsed.question    || question,
+      description: parsed.description === '(empty)' ? '' : (parsed.description || description),
+      skill:       parsed.skill       || skill,
+    };
+  } catch (err) {
+    console.warn('Enhance request fallback — returning original input');
+    return { question, description, skill };
+  }
+}
+
 module.exports = {
   callGroqAPI,
   askTeachDevta,
   generateSkillQuiz,
+  enhanceLearningRequest,
 };
+

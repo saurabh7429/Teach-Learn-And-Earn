@@ -1233,6 +1233,32 @@ button, input, textarea, select {
   box-shadow: 0 4px 14px var(--primary-glow);
 }
 
+.chat-bubble .markdown-content {
+  color: inherit;
+}
+
+.chat-bubble .md-p:last-child {
+  margin-bottom: 0;
+}
+
+.chat-msg.me .chat-bubble .md-p,
+.chat-msg.me .chat-bubble .md-list-item,
+.chat-msg.me .chat-bubble .md-list-item-num {
+  color: #ffffff;
+}
+
+.chat-msg.me .chat-bubble .md-inline-code {
+  background: rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.chat-msg.me .chat-bubble .md-code-container {
+  background: #0B0D13;
+  color: #e2e8f0;
+  text-align: left;
+}
+
 .chat-time {
   font-size: 0.72rem;
   color: var(--text-muted);

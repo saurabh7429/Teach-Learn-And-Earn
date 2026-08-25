@@ -1,29 +1,41 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMySkills, addSkill, verifySkill, deleteSkill, generateDevtaQuiz } from '../api';
+import { getMySkills, addSkill, verifySkill, deleteSkill, generateDevtaQuiz, getRequestsBySkill, getChats, offerTeach } from '../api';
+import { useAuth } from '../context/AuthContext';
 import Modal from '../components/Modal';
 
 export default function Teach({ onOpenAI }) {
   const navigate = useNavigate();
-  const [mySkills, setMySkills] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+  const { user } = useAuth();
+  const [mySkills, setMySkills]             = useState([]);
+  const [myChats, setMyChats]               = useState([]);
+  const [showModal, setShowModal]           = useState(false);
   const [showAssessment, setShowAssessment] = useState(false);
   const [selectedSkillForEval, setSelectedSkillForEval] = useState(null);
-  
-  // Dynamic Groq AI Quiz State
-  const [quizQuestions, setQuizQuestions] = useState([]);
-  const [quizLoading, setQuizLoading] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [userAnswers, setUserAnswers] = useState({});
-  const [quizFinished, setQuizFinished] = useState(false);
-  const [score, setScore] = useState(0);
 
-  const [form, setForm] = useState({ name: '', description: '' });
+  // Students-for-skill modal
+  const [showStudentsModal, setShowStudentsModal] = useState(false);
+  const [studentsSkill, setStudentsSkill]         = useState(null);
+  const [activeSkillStudents, setActiveSkillStudents] = useState([]);
+  const [openSkillRequests, setOpenSkillRequests]     = useState([]);
+  const [studentsLoading, setStudentsLoading]     = useState(false);
+  const [offerLoadingId, setOfferLoadingId]       = useState(null);
+
+  // Dynamic AI Quiz State
+  const [quizQuestions, setQuizQuestions] = useState([]);
+  const [quizLoading, setQuizLoading]     = useState(false);
+  const [currentStep, setCurrentStep]     = useState(0);
+  const [userAnswers, setUserAnswers]     = useState({});
+  const [quizFinished, setQuizFinished]   = useState(false);
+  const [score, setScore]                 = useState(0);
+
+  const [form, setForm]     = useState({ name: '', description: '' });
   const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState('');
+  const [toast, setToast]   = useState('');
 
   useEffect(() => {
-    getMySkills().then((r) => setMySkills(r.data)).catch(() => {});
+    getMySkills().then((r) => setMySkills(r.data)).catch(() => setMySkills([]));
+    getChats().then((r) => setMyChats(r.data)).catch(() => setMyChats([]));
   }, []);
 
   const showToast = (msg) => {
@@ -39,11 +51,42 @@ export default function Teach({ onOpenAI }) {
       setMySkills((prev) => [data, ...prev]);
       setShowModal(false);
       setForm({ name: '', description: '' });
-      showToast('Skill added! Start Teach Devta Assessment to earn verified status. 🎓');
+      showToast('Skill added! Complete the Teach Devta assessment to get verified. 🎓');
     } catch (err) {
       showToast(err.response?.data?.message || 'Failed to add skill.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // ── Open students-for-skill modal ──
+  const handleViewStudents = async (skill) => {
+    setStudentsSkill(skill);
+    setActiveSkillStudents([]);
+    setOpenSkillRequests([]);
+    setShowStudentsModal(true);
+    setStudentsLoading(true);
+    try {
+      const { data } = await getRequestsBySkill(skill.name);
+      setActiveSkillStudents(data.activeStudents || []);
+      setOpenSkillRequests(data.openRequests || []);
+    } catch {
+      showToast('Could not load student requests.');
+    } finally {
+      setStudentsLoading(false);
+    }
+  };
+
+  const handleOfferFromSkill = async (reqId) => {
+    setOfferLoadingId(reqId);
+    try {
+      await offerTeach(reqId);
+      setOpenSkillRequests((prev) => prev.filter((r) => r._id !== reqId));
+      showToast('Offer submitted! The student will be notified. 🔔');
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to submit offer.');
+    } finally {
+      setOfferLoadingId(null);
     }
   };
 
@@ -57,14 +100,9 @@ export default function Teach({ onOpenAI }) {
     setQuizLoading(true);
 
     try {
-      // Call real Groq AI backend to generate 3 dynamic questions
-      const res = await generateDevtaQuiz({ 
-        skillName: skill.name, 
-        skillDescription: skill.description 
-      });
+      const res = await generateDevtaQuiz({ skillName: skill.name, skillDescription: skill.description });
       setQuizQuestions(res.data.questions || []);
-    } catch (err) {
-      console.warn('Failed to load dynamic Groq quiz, using fallback');
+    } catch {
       setQuizQuestions([
         {
           id: 1,
@@ -74,14 +112,14 @@ export default function Teach({ onOpenAI }) {
         },
         {
           id: 2,
-          question: `How do you explain complex ${skill.name} concepts to a beginner student?`,
-          options: ['Using real-world analogies and live code exercises', 'Overwhelming them with obscure trivia', 'Skipping fundamentals'],
+          question: `How do you explain complex ${skill.name} concepts to a beginner?`,
+          options: ['Using real-world analogies and live exercises', 'Overwhelming them with obscure trivia', 'Skipping fundamentals'],
           correctIndex: 0,
         },
         {
           id: 3,
-          question: `How do you ensure reliability and bug resilience in ${skill.name}?`,
-          options: ['Comprehensive testing, validation, and structured error logs', 'Ignoring exceptions', 'Hardcoding secrets in repository'],
+          question: `How do you ensure reliability in ${skill.name}?`,
+          options: ['Comprehensive testing and structured error logs', 'Ignoring exceptions', 'Hardcoding secrets'],
           correctIndex: 0,
         },
       ]);
@@ -90,30 +128,26 @@ export default function Teach({ onOpenAI }) {
     }
   };
 
-  const handleSelectOption = (questionIdx, optionIdx) => {
-    setUserAnswers((prev) => ({ ...prev, [questionIdx]: optionIdx }));
+  const handleSelectOption = (qIdx, oIdx) => {
+    setUserAnswers((prev) => ({ ...prev, [qIdx]: oIdx }));
   };
 
   const handleNextQuestion = async () => {
     if (currentStep < quizQuestions.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
-      // Evaluate score
       let correctCount = 0;
       quizQuestions.forEach((q, idx) => {
-        if (userAnswers[idx] === q.correctIndex) {
-          correctCount++;
-        }
+        if (userAnswers[idx] === q.correctIndex) correctCount++;
       });
       setScore(correctCount);
       setQuizFinished(true);
 
-      // If passed (at least 2/3 correct), verify skill
       if (correctCount >= 2 && selectedSkillForEval) {
         try {
           const { data } = await verifySkill(selectedSkillForEval._id);
           setMySkills((prev) => prev.map((s) => (s._id === selectedSkillForEval._id ? data : s)));
-          showToast(`🎉 Congratulations! "${selectedSkillForEval.name}" is now verified by Teach Devta AI!`);
+          showToast(`🎉 "${selectedSkillForEval.name}" is now Verified by Teach Devta!`);
         } catch (err) {
           showToast(err.response?.data?.message || 'Verification update failed.');
         }
@@ -132,6 +166,14 @@ export default function Teach({ onOpenAI }) {
     }
   };
 
+  // Filter active teaching sessions (where logged in user is the teacher)
+  const activeTeachingSessions = myChats.filter((c) => {
+    const isTeacher =
+      c.request?.selectedTeacher?._id === user?._id ||
+      c.request?.selectedTeacher === user?._id;
+    return isTeacher;
+  });
+
   return (
     <div className="page-body page-enter">
       <div className="container">
@@ -139,11 +181,11 @@ export default function Teach({ onOpenAI }) {
         <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
           <div>
             <h1>Teach 🎓</h1>
-            <p>Share your expertise with learners and build your teaching portfolio.</p>
+            <p>Manage your students, teaching skills, and 1-on-1 learning chats.</p>
           </div>
           <div style={{ display: 'flex', gap: 12 }}>
             <button className="btn btn-secondary btn-sm" onClick={() => navigate('/requests')}>
-              View Open Learning Requests 🤝
+              View Open Requests Feed 🤝
             </button>
             <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}>
               + Add Teaching Skill
@@ -161,7 +203,7 @@ export default function Teach({ onOpenAI }) {
                   Skill Verification by Teach Devta
                 </h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem' }}>
-                  Verified teachers earn verified badges and receive priority placement when responding to student learning requests.
+                  Tap any skill to view enrolled students and open learning requests matching that subject.
                 </p>
               </div>
             </div>
@@ -171,7 +213,61 @@ export default function Teach({ onOpenAI }) {
           </div>
         </div>
 
-        {/* My Teaching Skills Grid */}
+        {/* ── Active Students & 1-on-1 Sessions ── */}
+        <div className="dashboard-section">
+          <div className="section-header">
+            <h2 className="section-title">My Active Students &amp; Sessions</h2>
+            <span className="badge badge-verified">{activeTeachingSessions.length} Active</span>
+          </div>
+
+          {activeTeachingSessions.length === 0 ? (
+            <div className="card" style={{ padding: 32, textAlign: 'center', color: 'var(--text-muted)' }}>
+              <p style={{ marginBottom: 12, fontSize: '0.98rem' }}>No active students assigned to you yet.</p>
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+                Browse the Requests feed and offer to teach students to start 1-on-1 sessions.
+              </p>
+              <button className="btn btn-secondary btn-sm" style={{ marginTop: 14 }} onClick={() => navigate('/requests')}>
+                Browse Student Requests →
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
+              {activeTeachingSessions.map((chatItem) => {
+                const studentUser = chatItem.participants?.find((p) => p._id !== user?._id);
+                const isCompleted = chatItem.status === 'completed';
+                return (
+                  <div className="card card-3d" key={chatItem._id}>
+                    <div className="card-body">
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                        <span className={`badge ${isCompleted ? 'badge-purple' : 'badge-verified'}`}>
+                          {isCompleted ? '✓ Completed' : '🎓 Active Student'}
+                        </span>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                          {new Date(chatItem.updatedAt || chatItem.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-primary)' }}>
+                        {chatItem.skill || 'Peer Learning Session'}
+                      </h3>
+                      <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: 16 }}>
+                        Student: <strong>{studentUser?.name || 'Enrolled Student'}</strong> (@{studentUser?.username || 'student'})
+                      </p>
+                      <button
+                        className="btn btn-primary btn-sm"
+                        style={{ width: '100%' }}
+                        onClick={() => navigate(`/chat/${chatItem._id}`)}
+                      >
+                        💬 Open Chat with {studentUser?.name?.split(' ')[0] || 'Student'}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* ── My Teaching Skills Grid ── */}
         <div className="dashboard-section">
           <div className="section-header">
             <h2 className="section-title">My Teaching Skills</h2>
@@ -187,7 +283,7 @@ export default function Teach({ onOpenAI }) {
                 You haven&apos;t added any teaching skills yet.
               </p>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', marginBottom: 20 }}>
-                Add subjects you are proficient in and complete the quick 3-question AI assessment to get verified.
+                Add subjects you are proficient in and complete a quick 3-question assessment to get verified.
               </p>
               <button className="btn btn-primary btn-md" onClick={() => setShowModal(true)}>
                 + Add Your First Skill
@@ -196,14 +292,14 @@ export default function Teach({ onOpenAI }) {
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 24 }}>
               {mySkills.map((skill) => (
-                <div className="card card-3d" key={skill._id}>
+                <div className="card card-3d" key={skill._id} style={{ cursor: 'pointer' }} onClick={() => handleViewStudents(skill)}>
                   <div className="card-body">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
                       <span className={`badge ${skill.verified ? 'badge-verified' : 'badge-pending'}`}>
                         {skill.verified ? '✓ Verified Teacher' : '⏳ Pending Assessment'}
                       </span>
                       <button
-                        onClick={() => handleDelete(skill._id)}
+                        onClick={(e) => { e.stopPropagation(); handleDelete(skill._id); }}
                         style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '1.1rem' }}
                         title="Remove skill"
                       >
@@ -219,27 +315,19 @@ export default function Teach({ onOpenAI }) {
                     </p>
 
                     <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16 }}>
-                      {skill.verified ? (
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '0.85rem', color: 'var(--success)', fontWeight: 700 }}>
-                            ✅ Qualified by Teach Devta
-                          </span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+                        <span style={{ fontSize: '0.85rem', color: 'var(--accent-indigo)', fontWeight: 700 }}>
+                          👥 View Students →
+                        </span>
+                        {!skill.verified && (
                           <button
-                            className="btn btn-secondary btn-sm"
-                            onClick={() => navigate('/requests')}
+                            className="btn btn-gradient btn-xs"
+                            onClick={(e) => { e.stopPropagation(); startAssessmentForSkill(skill); }}
                           >
-                            Find Students →
+                            ⚡ Take Quiz
                           </button>
-                        </div>
-                      ) : (
-                        <button
-                          className="btn btn-gradient btn-sm"
-                          style={{ width: '100%' }}
-                          onClick={() => startAssessmentForSkill(skill)}
-                        >
-                          ⚡ Take AI Verification Quiz
-                        </button>
-                      )}
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -256,13 +344,12 @@ export default function Teach({ onOpenAI }) {
               <input
                 className="form-input"
                 type="text"
-                placeholder="e.g. React & Next.js, Node.js, Python, UI/UX"
+                placeholder="e.g. C++, React, Node.js, Python, DSA"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 required
               />
             </div>
-
             <div className="form-group">
               <label className="form-label">Experience &amp; What You Can Teach</label>
               <textarea
@@ -272,14 +359,124 @@ export default function Teach({ onOpenAI }) {
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
               />
             </div>
-
             <button type="submit" className="btn btn-primary btn-md" style={{ width: '100%' }} disabled={loading}>
               {loading ? 'Adding Skill…' : '＋ Add Skill & Take Assessment'}
             </button>
           </form>
         </Modal>
 
-        {/* ── Modal: Dynamic Groq AI Skill Assessment ── */}
+        {/* ── Modal: Students for this skill (Active & Open) ── */}
+        <Modal
+          isOpen={showStudentsModal}
+          onClose={() => setShowStudentsModal(false)}
+          title={`Students for ${studentsSkill?.name || 'Skill'} 👥`}
+        >
+          {studentsLoading ? (
+            <div style={{ textAlign: 'center', padding: '32px 0' }}>
+              <div className="spinner" style={{ margin: '0 auto 12px' }} />
+              <p style={{ color: 'var(--text-secondary)' }}>Loading student requests…</p>
+            </div>
+          ) : (activeSkillStudents.length === 0 && openSkillRequests.length === 0) ? (
+            <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted)' }}>
+              <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>📚</div>
+              <p>No active students or open requests for <strong>{studentsSkill?.name}</strong> right now.</p>
+              <p style={{ fontSize: '0.88rem', marginTop: 8 }}>Browse all requests in the feed to find learners.</p>
+              <button className="btn btn-secondary btn-sm" style={{ marginTop: 16 }} onClick={() => { setShowStudentsModal(false); navigate('/requests'); }}>
+                Browse All Requests →
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {/* Section 1: Active Enrolled Students */}
+              {activeSkillStudents.length > 0 && (
+                <div>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--success)', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span>✅</span> Active Enrolled Students ({activeSkillStudents.length})
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {activeSkillStudents.map((req) => (
+                      <div
+                        key={req._id}
+                        style={{
+                          background: 'var(--surface)',
+                          border: '1px solid var(--success)',
+                          borderRadius: 'var(--radius-md)',
+                          padding: '14px 16px',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          flexWrap: 'wrap',
+                          gap: 10,
+                        }}
+                      >
+                        <div>
+                          <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
+                            🎓 {req.student?.name || 'Student'} (@{req.student?.username || 'user'})
+                          </div>
+                          <div style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', marginTop: 2 }}>
+                            &ldquo;{req.question}&rdquo;
+                          </div>
+                        </div>
+                        {req.chatId ? (
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => {
+                              setShowStudentsModal(false);
+                              navigate(`/chat/${req.chatId}`);
+                            }}
+                          >
+                            💬 Open Chat
+                          </button>
+                        ) : (
+                          <span className="badge badge-verified">Assigned</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Section 2: Open Requests Seeking Teachers */}
+              {openSkillRequests.length > 0 && (
+                <div>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--accent-indigo)', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span>⏳</span> Open Requests Seeking Teacher ({openSkillRequests.length})
+                  </h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {openSkillRequests.map((req) => (
+                      <div
+                        key={req._id}
+                        style={{
+                          background: 'var(--surface-inset)',
+                          border: '1px solid var(--border)',
+                          borderRadius: 'var(--radius-md)',
+                          padding: 14,
+                        }}
+                      >
+                        <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
+                          &ldquo;{req.question}&rdquo;
+                        </div>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 10 }}>
+                          Student: <strong>{req.student?.name || 'Anonymous'}</strong>
+                          {req.description && ` • ${req.description.slice(0, 70)}…`}
+                        </div>
+                        <button
+                          className="btn btn-primary btn-sm"
+                          disabled={offerLoadingId === req._id}
+                          onClick={() => handleOfferFromSkill(req._id)}
+                        >
+                          {offerLoadingId === req._id ? 'Sending…' : '✋ Offer to Teach'}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </Modal>
+
+        {/* ── Modal: AI Skill Assessment ── */}
         <Modal
           isOpen={showAssessment}
           onClose={() => setShowAssessment(false)}
@@ -305,14 +502,11 @@ export default function Teach({ onOpenAI }) {
               </h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginBottom: 20 }}>
                 You scored <strong>{score} / {quizQuestions.length}</strong> on the {selectedSkillForEval?.name} examination.
-                {score >= 2 
-                  ? ' You are now a Verified Teacher on TL&E!' 
-                  : ' Review the core fundamentals and retry the assessment anytime.'}
+                {score >= 2
+                  ? ' You are now a Verified Teacher on TL&E!'
+                  : ' Review the core fundamentals and retry anytime.'}
               </p>
-              <button
-                className="btn btn-primary btn-md"
-                onClick={() => setShowAssessment(false)}
-              >
+              <button className="btn btn-primary btn-md" onClick={() => setShowAssessment(false)}>
                 {score >= 2 ? 'Done & Return to Teaching' : 'Close & Try Again Later'}
               </button>
             </div>
@@ -348,13 +542,7 @@ export default function Teach({ onOpenAI }) {
                         type="button"
                         onClick={() => handleSelectOption(currentStep, optIdx)}
                         className={`btn ${isSelected ? 'btn-primary' : 'btn-secondary'}`}
-                        style={{
-                          textAlign: 'left',
-                          justifyContent: 'flex-start',
-                          padding: '12px 18px',
-                          borderRadius: 'var(--radius-md)',
-                          fontSize: '0.92rem',
-                        }}
+                        style={{ textAlign: 'left', justifyContent: 'flex-start', padding: '12px 18px', borderRadius: 'var(--radius-md)', fontSize: '0.92rem' }}
                       >
                         <span style={{ fontWeight: 800, marginRight: 8 }}>
                           {String.fromCharCode(65 + optIdx)}.
