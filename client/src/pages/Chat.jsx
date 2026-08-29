@@ -19,7 +19,10 @@ export default function Chat() {
 
   // ── Socket.IO setup ──
   useEffect(() => {
-    socket = io('http://localhost:5000', { transports: ['websocket', 'polling'] });
+    const socketUrl =
+      import.meta.env.VITE_SOCKET_URL ||
+      (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '') : 'http://localhost:5000');
+    socket = io(socketUrl, { transports: ['websocket', 'polling'] });
     socket.emit('join_chat', id);
 
     socket.on('new_message', (updatedChat) => {
