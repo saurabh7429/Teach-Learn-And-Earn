@@ -67,7 +67,7 @@ export default function Progress() {
               No active learning sessions right now. Head over to <strong>Learn</strong> to connect with an expert!
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
+            <div className="grid-auto">
               {learning.activeRequests.map((req) => (
                 <div className="card card-3d" key={req._id}>
                   <div className="card-body">
@@ -115,7 +115,7 @@ export default function Progress() {
               No teaching skills listed yet. Head to <strong>Teach</strong> to list your skills and pass verification!
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
+            <div className="grid-auto">
               {teaching.skills.map((skill) => (
                 <div className="card card-3d" key={skill._id}>
                   <div className="card-body">

@@ -204,6 +204,13 @@ button, input, textarea, select {
   margin-top: 6px;
 }
 
+/* Utility: auto-responsive card grid (replaces inline style grids in pages) */
+.grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 20px;
+}
+
 /* ══════════════════════════════════════════════════════════════════
    4. FLOATING GLASS NAVBAR
    ══════════════════════════════════════════════════════════════════ */
@@ -1759,34 +1766,440 @@ button, input, textarea, select {
 /* ══════════════════════════════════════════════════════════════════
    17. RESPONSIVE BREAKPOINTS
    ══════════════════════════════════════════════════════════════════ */
+
+/* ── Tablet: 1024px ─────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 18px;
+  }
+
+  .navbar-inner {
+    padding: 0 18px;
+  }
+
+  /* Shrink logo text so nav links have more room */
+  .logo-text {
+    display: none;
+  }
+
+  .nav-link {
+    padding: 8px 12px;
+    font-size: 0.88rem;
+  }
+
+  .hero-greeting {
+    font-size: 2.8rem;
+  }
+
+  .action-cards-grid {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  }
+
+  /* Chat drawer full-width on tablet */
+  .devta-drawer {
+    max-width: 420px;
+  }
+
+  /* Teach page skill grid */
+  .skills-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+}
+
+/* ── Mobile: 768px ──────────────────────────────────────────────── */
 @media (max-width: 768px) {
+  :root {
+    --nav-height: 66px;
+  }
+
+  /* ── Navbar ── */
   .desktop-only {
     display: none !important;
   }
 
   .mobile-menu-btn {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .navbar {
+    top: 10px;
+    padding: 0 12px;
+  }
+
+  .navbar-inner {
+    padding: 0 16px;
+    height: var(--nav-height);
+  }
+
+  .logo-text {
+    display: none;
+  }
+
+  .navbar-actions {
+    gap: 8px;
+  }
+
+  .theme-toggle-btn,
+  .ai-launcher-btn,
+  .notif-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 1rem;
+  }
+
+  /* Hide username, keep avatar */
+  .profile-name {
+    display: none;
+  }
+
+  .profile-btn {
+    padding: 5px 8px 5px 5px;
+    gap: 0;
+  }
+
+  /* Mobile drawer */
+  .mobile-nav-drawer {
+    left: 12px;
+    right: 12px;
+    z-index: 999;
+  }
+
+  /* ── Layout ── */
+  .container {
+    padding: 0 14px;
+  }
+
+  .page-body {
+    padding-top: calc(var(--nav-height) + 18px);
+    padding-bottom: 60px;
+  }
+
+  /* ── Hero ── */
+  .hero-section {
+    padding: 36px 0 32px;
   }
 
   .hero-greeting {
-    font-size: 2.4rem;
+    font-size: 2rem;
+    letter-spacing: -0.03em;
   }
 
+  .hero-subtitle {
+    font-size: 1rem;
+    margin-bottom: 24px;
+  }
+
+  /* ── Page headers ── */
+  .page-header h1 {
+    font-size: 1.6rem;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 12px;
+  }
+
+  /* ── Action cards ── */
   .action-cards-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 
+  .action-card {
+    padding: 24px 20px;
+  }
+
+  /* ── Teach Devta widget ── */
   .teach-devta-widget {
     flex-direction: column;
     text-align: center;
+    padding: 24px 20px;
+    gap: 16px;
   }
 
   .teach-devta-avatar {
     margin: 0 auto;
   }
 
+  .teach-devta-info {
+    min-width: unset;
+  }
+
+  /* ── Stats grid ── */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .stat-number {
+    font-size: 2rem;
+  }
+
+  /* ── Section headers ── */
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .section-title {
+    font-size: 1.15rem;
+  }
+
+  /* ── Tabs ── */
+  .tabs-wrapper {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+    border-radius: var(--radius-lg);
+  }
+
+  .tab-btn {
+    flex: 1;
+    text-align: center;
+    padding: 9px 10px;
+    font-size: 0.82rem;
+  }
+
+  /* ── Auth card ── */
   .neo-disc-card {
-    padding: 36px 24px;
-    border-radius: 28px;
+    padding: 32px 20px;
+    border-radius: 24px;
+  }
+
+  .neo-auth-title {
+    font-size: 1.8rem;
+  }
+
+  /* ── Auth button group ── */
+  .auth-btn-group {
+    gap: 6px;
+  }
+
+  .auth-btn-group .btn {
+    padding: 7px 12px;
+    font-size: 0.82rem;
+  }
+
+  /* ── Chat page ── */
+  .chat-page {
+    height: calc(100vh - var(--nav-height) - 24px);
+    border-radius: var(--radius-lg);
+  }
+
+  .chat-header {
+    padding: 0 14px;
+    height: 60px;
+  }
+
+  .chat-messages {
+    padding: 16px 12px;
+    gap: 12px;
+  }
+
+  .chat-msg {
+    max-width: 88%;
+  }
+
+  .chat-bubble {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+  }
+
+  .chat-input-bar {
+    padding: 12px 14px;
+    gap: 8px;
+  }
+
+  .chat-input-field {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+  }
+
+  /* ── AI Drawer ── */
+  .devta-drawer {
+    max-width: 100%;
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    height: 92%;
+    animation: drawerSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .devta-drawer-overlay {
+    align-items: flex-end;
+  }
+
+  @keyframes drawerSlideUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+
+  .devta-drawer-header {
+    padding: 16px 18px;
+  }
+
+  .devta-messages-stream {
+    padding: 14px 14px;
+  }
+
+  .devta-input-bar {
+    padding: 12px 14px;
+    gap: 8px;
+  }
+
+  /* ── Cards grids ── */
+  .cards-responsive-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    padding: 12px;
+    align-items: flex-end;
+  }
+
+  .modal-content {
+    padding: 24px 18px;
+    border-radius: var(--radius-lg) var(--radius-lg) var(--radius-sm) var(--radius-sm);
+    max-width: 100%;
+  }
+
+  /* ── Toast ── */
+  .toast-notification {
+    bottom: 16px;
+    right: 12px;
+    left: 12px;
+    text-align: center;
+    font-size: 0.85rem;
+    padding: 12px 16px;
+  }
+
+  /* ── Request cards teacher list ── */
+  .request-card {
+    padding: 16px;
+  }
+
+  /* ── Scroll chips ── */
+  .category-chip {
+    padding: 7px 14px;
+    font-size: 0.82rem;
+  }
+
+  /* ── Button sizes ── */
+  .btn-lg {
+    padding: 12px 24px;
+    font-size: 0.95rem;
+  }
+}
+
+/* ── Small Mobile: 480px ────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .hero-greeting {
+    font-size: 1.65rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .stat-card {
+    padding: 16px 10px;
+  }
+
+  .stat-number {
+    font-size: 1.75rem;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+  }
+
+  .action-card {
+    padding: 20px 16px;
+  }
+
+  .action-card-title {
+    font-size: 1.4rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.35rem;
+  }
+
+  /* Logo on very small screens */
+  .logo-badge {
+    font-size: 0.78rem;
+    padding: 5px 9px;
+  }
+
+  .navbar-inner {
+    padding: 0 12px;
+  }
+
+  .theme-toggle-btn,
+  .ai-launcher-btn,
+  .notif-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 0.92rem;
+  }
+
+  /* Hide AI button on tiny screens to save space, accessible via drawer */
+  .ai-launcher-btn {
+    display: none;
+  }
+
+  .neo-disc-card {
+    padding: 28px 16px;
+    border-radius: 20px;
+  }
+
+  .neo-auth-title {
+    font-size: 1.55rem;
+  }
+
+  .tabs-wrapper {
+    gap: 6px;
+  }
+
+  .tab-btn {
+    font-size: 0.78rem;
+    padding: 8px 8px;
+  }
+
+  .modal-content {
+    padding: 20px 14px;
+  }
+
+  .section-title {
+    font-size: 1.05rem;
+  }
+
+  .chat-msg {
+    max-width: 95%;
+  }
+
+  .devta-drawer {
+    height: 95%;
+  }
+
+  /* Stack inline header actions vertically */
+  .page-header > div:last-child {
+    flex-wrap: wrap;
+    gap: 8px;
   }
 }

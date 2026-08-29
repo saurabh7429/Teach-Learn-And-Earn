@@ -7,21 +7,21 @@ import MarkdownRenderer from '../components/MarkdownRenderer';
 export default function Learn({ onOpenAI }) {
   const navigate = useNavigate();
   const [myRequests, setMyRequests] = useState([]);
-  const [myChats, setMyChats]       = useState([]);
-  const [search, setSearch]         = useState('');
-  const [showModal, setShowModal]   = useState(false);
+  const [myChats, setMyChats] = useState([]);
+  const [search, setSearch] = useState('');
+  const [showModal, setShowModal] = useState(false);
   const [showDevtaModal, setShowDevtaModal] = useState(false);
 
   // AI ask state
   const [devtaQuestion, setDevtaQuestion] = useState('');
-  const [devtaAnswer, setDevtaAnswer]     = useState('');
-  const [devtaLoading, setDevtaLoading]   = useState(false);
+  const [devtaAnswer, setDevtaAnswer] = useState('');
+  const [devtaLoading, setDevtaLoading] = useState(false);
 
   // Create-request form
-  const [form, setForm]           = useState({ question: '', description: '', skill: '' });
-  const [loading, setLoading]     = useState(false);
+  const [form, setForm] = useState({ question: '', description: '', skill: '' });
+  const [loading, setLoading] = useState(false);
   const [enhancing, setEnhancing] = useState(false);
-  const [toast, setToast]         = useState('');
+  const [toast, setToast] = useState('');
 
   useEffect(() => {
     getMyRequests().then((r) => setMyRequests(r.data)).catch(() => setMyRequests([]));
@@ -42,9 +42,9 @@ export default function Learn({ onOpenAI }) {
     setEnhancing(true);
     try {
       const { data } = await enhanceRequest({
-        question:    form.question,
+        question: form.question,
         description: form.description,
-        skill:       form.skill,
+        skill: form.skill,
       });
       setForm({ question: data.question, description: data.description, skill: data.skill });
       showToast('✨ Request refined by Teach Devta!');
@@ -175,7 +175,7 @@ export default function Learn({ onOpenAI }) {
               </button>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
+            <div className="grid-auto">
               {activeRequests.map((req) => {
                 const linkedChat = myChats.find(
                   (c) => c.request?._id === req._id || c.skill === req.skill
@@ -264,7 +264,7 @@ export default function Learn({ onOpenAI }) {
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         {req.teacherResponses.map((item, idx) => {
                           const teacherUser = item.teacher && typeof item.teacher === 'object' ? item.teacher : { _id: item.teacher };
-                          const teacherId   = teacherUser._id || item.teacher || item._id;
+                          const teacherId = teacherUser._id || item.teacher || item._id;
                           const teacherName = teacherUser.name || 'Peer Teacher';
                           return (
                             <div key={item._id || idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--surface)', padding: '8px 12px', borderRadius: 'var(--radius-sm)' }}>

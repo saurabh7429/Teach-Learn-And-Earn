@@ -231,7 +231,7 @@ export default function Teach({ onOpenAI }) {
               </button>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
+            <div className="grid-auto">
               {activeTeachingSessions.map((chatItem) => {
                 const studentUser = chatItem.participants?.find((p) => p._id !== user?._id);
                 const isCompleted = chatItem.status === 'completed';
@@ -290,7 +290,7 @@ export default function Teach({ onOpenAI }) {
               </button>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 24 }}>
+            <div className="grid-auto">
               {mySkills.map((skill) => (
                 <div className="card card-3d" key={skill._id} style={{ cursor: 'pointer' }} onClick={() => handleViewStudents(skill)}>
                   <div className="card-body">

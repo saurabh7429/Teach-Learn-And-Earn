@@ -211,7 +211,7 @@ export default function Home({ onOpenAI }) {
               </button>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+            <div className="grid-auto">
               {myChats.map((chat) => (
                 <div 
                   key={chat._id} 
