@@ -102,7 +102,7 @@ export default function Navbar({ onOpenAI }) {
                 🔔
                 <span className="notif-badge">3</span>
               </button>
-              <div className="profile-btn" onClick={handleLogout} title="Click to logout">
+              <div className="profile-btn" onClick={() => navigate('/profile')} title="View Profile">
                 <div className="profile-avatar">{initials}</div>
                 <span className="profile-name">{user?.name?.split(' ')[0] ?? 'User'} ▾</span>
               </div>

@@ -65,14 +65,8 @@ export default function Chat() {
 
   const amITeacher =
     teacherId && user?._id && teacherId.toString() === user._id.toString();
-  const amIStudent =
-    studentId && user?._id && studentId.toString() === user._id.toString();
 
-  // If role is determined
-  const myRole = amITeacher ? 'Teacher' : 'Student';
-  const otherRole = amITeacher ? 'Student' : 'Teacher';
-
-  const myRoleBadge = amITeacher ? '👨‍🏫 Teacher' : '🎓 Student';
+  const myRoleBadge    = amITeacher ? '👨‍🏫 Teacher' : '🎓 Student';
   const otherRoleBadge = amITeacher ? '🎓 Student' : '👨‍🏫 Teacher';
 
   const handleSend = async () => {
@@ -91,7 +85,6 @@ export default function Chat() {
   };
 
   const handleKeyDown = (e) => {
-    // Shift+Enter → new line; Enter alone → send
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
@@ -123,181 +116,167 @@ export default function Chat() {
   }
 
   return (
-    <div className="page-body page-enter" style={{ paddingBottom: 20 }}>
-      <div className="container">
-        <div className="chat-page">
-          {/* ── Chat Header ── */}
-          <div className="chat-header">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <button className="chat-back-btn" onClick={() => navigate(-1)} title="Back">
-                ←
-              </button>
-              <div className="chat-header-info">
-                <div className="chat-header-title">
-                  {chat.skill || 'Peer Learning Session'}
-                </div>
-                <div className="chat-header-sub">
-                  {isCompleted ? (
-                    '✅ Session Completed'
-                  ) : otherParticipant ? (
-                    amITeacher ? (
-                      <span>🎓 Student: <strong>{otherParticipant.name}</strong></span>
-                    ) : (
-                      <span>👨‍🏫 Teacher: <strong>{otherParticipant.name}</strong></span>
-                    )
+    <div className="page-body chat-page-wrapper">
+      <div className="chat-page">
+
+        {/* ── Chat Header ── */}
+        <div className="chat-header">
+          <div className="chat-header-left">
+            <button className="chat-back-btn" onClick={() => navigate(-1)} title="Back">
+              ←
+            </button>
+            <div className="chat-header-info">
+              <div className="chat-header-title">
+                {chat.skill || 'Peer Learning Session'}
+              </div>
+              <div className="chat-header-sub">
+                {isCompleted ? (
+                  <span style={{ color: 'var(--success)' }}>✅ Session Completed</span>
+                ) : otherParticipant ? (
+                  amITeacher ? (
+                    <span>🎓 Student: <strong>{otherParticipant.name}</strong></span>
                   ) : (
-                    'Live Session'
-                  )}
-                </div>
+                    <span>👨‍🏫 Teacher: <strong>{otherParticipant.name}</strong></span>
+                  )
+                ) : (
+                  'Live Session'
+                )}
               </div>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-              {/* Complete Session button */}
-              {!isCompleted && (
-                <button
-                  className="btn btn-secondary btn-sm"
-                  onClick={handleCompleteSession}
-                  disabled={completing}
-                  style={{ fontSize: '0.8rem' }}
-                  title="Mark session as complete"
-                >
-                  {completing ? '…' : '✔ Complete Session'}
-                </button>
-              )}
-
-              {/* Other Participant Pill */}
-              {otherParticipant && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--surface-inset)', padding: '6px 12px', borderRadius: 'var(--radius-full)', border: '1px solid var(--border)' }}>
-                  <div className="profile-avatar" style={{ width: 26, height: 26, fontSize: '0.8rem' }}>
-                    {(otherParticipant?.name?.[0] || otherParticipant?.username?.[0] || 'P').toUpperCase()}
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.2 }}>
-                      {otherParticipant?.name || otherParticipant?.username || 'Peer'}
-                    </span>
-                    <span style={{ fontSize: '0.72rem', color: 'var(--accent-indigo)', fontWeight: 600 }}>
-                      {otherRoleBadge}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* Current User Role Badge */}
-              <span className="badge badge-indigo" style={{ fontSize: '0.75rem', padding: '4px 8px' }}>
-                You: {myRoleBadge}
-              </span>
             </div>
           </div>
 
-          {/* Session completed banner */}
-          {isCompleted && (
-            <div style={{
-              background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(99, 102, 241, 0.1))',
-              border: '1px solid var(--success)',
-              borderRadius: 'var(--radius-md)',
-              padding: '12px 20px',
-              margin: '0 0 12px',
-              textAlign: 'center',
-              color: 'var(--success)',
-              fontWeight: 700,
-              fontSize: '0.95rem',
-            }}>
-              ✅ This session was completed on {new Date(chat.completedAt).toLocaleDateString()}. 
-              Thank you for learning together!
-            </div>
-          )}
+          <div className="chat-header-right">
+            {/* Role badge */}
+            <span className="badge badge-indigo chat-role-badge">
+              {myRoleBadge}
+            </span>
 
-          {/* Messages Stream */}
-          <div className="chat-messages">
-            {chat.messages.length === 0 ? (
-              <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.95rem', margin: 'auto' }}>
-                <div style={{ fontSize: '2.5rem', marginBottom: 10 }}>👋</div>
-                <p style={{ fontWeight: 600, color: 'var(--text-primary)' }}>No messages yet.</p>
-                <p>
-                  {amITeacher
-                    ? `Say hello to your student (${otherParticipant?.name || 'Student'}) to begin!`
-                    : `Say hello to your teacher (${otherParticipant?.name || 'Teacher'}) to begin!`}
-                </p>
+            {/* Other participant pill */}
+            {otherParticipant && (
+              <div className="chat-peer-pill">
+                <div className="profile-avatar" style={{ width: 28, height: 28, fontSize: '0.78rem', flexShrink: 0 }}>
+                  {(otherParticipant?.name?.[0] || 'P').toUpperCase()}
+                </div>
+                <div className="chat-peer-info">
+                  <span className="chat-peer-name">
+                    {otherParticipant?.name || 'Peer'}
+                  </span>
+                  <span className="chat-peer-role">{otherRoleBadge}</span>
+                </div>
               </div>
-            ) : (
-              chat.messages.map((msg) => {
-                const isMe = msg.sender?._id === user?._id;
-                const initial = msg.sender?.name?.[0]?.toUpperCase() ?? (isMe ? 'U' : '?');
-                const senderName = isMe ? 'You' : (msg.sender?.name || otherParticipant?.name || 'Peer');
-                const senderRole = isMe ? myRoleBadge : otherRoleBadge;
-
-                return (
-                  <div className={`chat-msg ${isMe ? 'me' : ''}`} key={msg._id || Math.random()}>
-                    <div className="chat-msg-avatar">{initial}</div>
-                    <div style={{ maxWidth: '80%' }}>
-                      <div style={{
-                        fontSize: '0.74rem',
-                        fontWeight: 700,
-                        color: isMe ? 'var(--text-muted)' : 'var(--accent-indigo)',
-                        marginBottom: 3,
-                        textAlign: isMe ? 'right' : 'left',
-                      }}>
-                        {senderName} • {senderRole}
-                      </div>
-                      <div className="chat-bubble">
-                        <MarkdownRenderer content={msg.content} />
-                      </div>
-                      <span className="chat-time">{formatTime(msg.sentAt)}</span>
-                    </div>
-                  </div>
-                );
-              })
             )}
-            <div ref={messagesEndRef} />
-          </div>
 
-          {/* Message Input Bar */}
-          {isCompleted ? (
-            <div style={{
-              padding: '14px 20px',
-              background: 'var(--surface-inset)',
-              borderTop: '1px solid var(--border)',
-              borderRadius: '0 0 var(--radius-lg) var(--radius-lg)',
-              textAlign: 'center',
-              color: 'var(--text-muted)',
-              fontSize: '0.9rem',
-            }}>
-              Session completed — messaging is closed.
+            {/* Complete Session button — desktop only */}
+            {!isCompleted && (
+              <button
+                className="btn btn-secondary btn-sm chat-complete-btn"
+                onClick={handleCompleteSession}
+                disabled={completing}
+                title="Mark session as complete"
+              >
+                {completing ? '…' : '✔ Complete'}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* ── Mobile: Complete Session bar ── */}
+        {!isCompleted && (
+          <div className="chat-mobile-action-bar">
+            <button
+              className="btn btn-secondary btn-sm"
+              onClick={handleCompleteSession}
+              disabled={completing}
+              style={{ width: '100%', justifyContent: 'center' }}
+            >
+              {completing ? 'Completing…' : '✔ Mark Session Complete'}
+            </button>
+          </div>
+        )}
+
+        {/* Session completed banner */}
+        {isCompleted && (
+          <div className="chat-completed-banner">
+            ✅ This session was completed on {new Date(chat.completedAt).toLocaleDateString()}.
+            Thank you for learning together!
+          </div>
+        )}
+
+        {/* Messages Stream */}
+        <div className="chat-messages">
+          {chat.messages.length === 0 ? (
+            <div className="chat-empty-state">
+              <div style={{ fontSize: '2.5rem', marginBottom: 10 }}>👋</div>
+              <p style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>No messages yet.</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                {amITeacher
+                  ? `Say hello to your student (${otherParticipant?.name || 'Student'}) to begin!`
+                  : `Say hello to your teacher (${otherParticipant?.name || 'Teacher'}) to begin!`}
+              </p>
             </div>
           ) : (
-            <form
-              className="chat-input-bar"
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSend();
-              }}
-            >
-              <textarea
-                className="chat-input-field"
-                placeholder="Type your message… (Enter to send, Shift+Enter for new line)"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                disabled={sending}
-                rows={1}
-                style={{ resize: 'none', overflowY: 'hidden', lineHeight: '1.5' }}
-                onInput={(e) => {
-                  e.target.style.height = 'auto';
-                  e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
-                }}
-              />
-              <button
-                type="submit"
-                className="chat-send-btn"
-                disabled={!input.trim() || sending}
-                title="Send message"
-              >
-                {sending ? '…' : '➤'}
-              </button>
-            </form>
+            chat.messages.map((msg) => {
+              const isMe = msg.sender?._id === user?._id;
+              const initial = msg.sender?.name?.[0]?.toUpperCase() ?? (isMe ? 'U' : '?');
+              const senderName = isMe ? 'You' : (msg.sender?.name || otherParticipant?.name || 'Peer');
+              const senderRole = isMe ? myRoleBadge : otherRoleBadge;
+
+              return (
+                <div className={`chat-msg ${isMe ? 'me' : ''}`} key={msg._id || Math.random()}>
+                  <div className="chat-msg-avatar">{initial}</div>
+                  <div className="chat-msg-body">
+                    <div className={`chat-msg-meta ${isMe ? 'me' : ''}`}>
+                      {senderName} · {senderRole}
+                    </div>
+                    <div className="chat-bubble">
+                      <MarkdownRenderer content={msg.content} />
+                    </div>
+                    <span className="chat-time">{formatTime(msg.sentAt)}</span>
+                  </div>
+                </div>
+              );
+            })
           )}
+          <div ref={messagesEndRef} />
         </div>
+
+        {/* Message Input Bar */}
+        {isCompleted ? (
+          <div className="chat-closed-bar">
+            🔒 Session completed — messaging is closed.
+          </div>
+        ) : (
+          <form
+            className="chat-input-bar"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSend();
+            }}
+          >
+            <textarea
+              className="chat-input-field"
+              placeholder="Type a message… (Enter to send, Shift+Enter for new line)"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              disabled={sending}
+              rows={1}
+              style={{ resize: 'none', overflowY: 'hidden', lineHeight: '1.5' }}
+              onInput={(e) => {
+                e.target.style.height = 'auto';
+                e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+              }}
+            />
+            <button
+              type="submit"
+              className="chat-send-btn"
+              disabled={!input.trim() || sending}
+              title="Send message"
+            >
+              {sending ? '…' : '➤'}
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );

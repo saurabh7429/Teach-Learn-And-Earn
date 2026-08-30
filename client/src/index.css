@@ -1148,14 +1148,17 @@ button, input, textarea, select {
 }
 
 .chat-header {
-  height: 70px;
-  padding: 0 24px;
+  min-height: 68px;
+  height: auto;
+  padding: 12px 24px;
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .chat-back-btn {
@@ -2197,9 +2200,342 @@ button, input, textarea, select {
     height: 95%;
   }
 
-  /* Stack inline header actions vertically */
+  /* ── Stack inline header actions vertically */
   .page-header > div:last-child {
     flex-wrap: wrap;
     gap: 8px;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   18. BTN-DANGER & EXTRAS
+   ══════════════════════════════════════════════════════════════════ */
+.btn-danger {
+  background: linear-gradient(135deg, var(--danger) 0%, #BE123C 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 14px rgba(244, 63, 94, 0.35);
+}
+
+.btn-danger:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(244, 63, 94, 0.5);
+}
+
+.btn-xs {
+  padding: 4px 10px;
+  font-size: 0.78rem;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   19. PROFILE PAGE
+   ══════════════════════════════════════════════════════════════════ */
+.profile-hero-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-3d-card);
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+
+.profile-hero-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg,
+    rgba(99, 102, 241, 0.18) 0%,
+    rgba(239, 68, 68, 0.12) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.profile-hero-content {
+  position: relative;
+  z-index: 1;
+  padding: 36px 32px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.profile-hero-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-indigo) 0%, var(--primary) 100%);
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 8px 24px var(--accent-indigo-glow), 0 0 0 4px rgba(99, 102, 241, 0.2);
+}
+
+.profile-hero-info {
+  flex: 1;
+  min-width: 180px;
+}
+
+.profile-hero-name {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.profile-hero-username {
+  font-size: 1rem;
+  color: var(--accent-indigo);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.profile-hero-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+.profile-empty-state {
+  padding: 40px 24px;
+  text-align: center;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   20. CHAT PAGE — MOBILE-FIRST RESTRUCTURE
+   ══════════════════════════════════════════════════════════════════ */
+.chat-page-wrapper {
+  padding-bottom: 0;
+}
+
+/* Auto-height header instead of fixed 70px */
+.chat-header {
+  min-height: 68px;
+  height: auto;
+  padding: 12px 20px;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.chat-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chat-role-badge {
+  font-size: 0.73rem;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.chat-peer-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-inset);
+  padding: 5px 12px 5px 6px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+}
+
+.chat-peer-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.chat-peer-name {
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.chat-peer-role {
+  font-size: 0.7rem;
+  color: var(--accent-indigo);
+  font-weight: 600;
+}
+
+.chat-complete-btn {
+  white-space: nowrap;
+}
+
+/* Mobile: show complete action bar below header */
+.chat-mobile-action-bar {
+  display: none;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-inset);
+}
+
+.chat-msg-body {
+  max-width: 80%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-msg-meta {
+  font-size: 0.73rem;
+  font-weight: 700;
+  color: var(--accent-indigo);
+  margin-bottom: 3px;
+}
+
+.chat-msg-meta.me {
+  color: var(--text-muted);
+  text-align: right;
+}
+
+.chat-empty-state {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+.chat-completed-banner {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(99, 102, 241, 0.08));
+  border: 1px solid var(--success);
+  border-radius: 0;
+  padding: 12px 20px;
+  text-align: center;
+  color: var(--success);
+  font-weight: 700;
+  font-size: 0.93rem;
+  flex-shrink: 0;
+}
+
+.chat-closed-bar {
+  padding: 14px 20px;
+  background: var(--surface-inset);
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   21. TEACH DEVTA — LOGIN REQUIRED CARD
+   ══════════════════════════════════════════════════════════════════ */
+.devta-login-required {
+  padding: 8px 4px;
+  text-align: center;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   22. MOBILE OVERRIDES — Chat & Profile
+   ══════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Chat page full-screen */
+  .chat-page-wrapper {
+    padding-top: calc(var(--nav-height) + 10px);
+    padding-bottom: 0;
+    min-height: 100vh;
+  }
+
+  .chat-page {
+    height: calc(100dvh - var(--nav-height) - 10px);
+    border-radius: var(--radius-lg);
+    margin: 0 8px;
+  }
+
+  /* Header: stack rows on very small screens */
+  .chat-header {
+    padding: 10px 14px;
+    gap: 8px;
+  }
+
+  .chat-header-left {
+    flex: 1 1 100%;
+  }
+
+  .chat-header-right {
+    flex: 1 1 100%;
+    justify-content: flex-start;
+  }
+
+  /* Show mobile complete bar, hide desktop complete btn */
+  .chat-mobile-action-bar {
+    display: block;
+  }
+
+  .chat-complete-btn {
+    display: none;
+  }
+
+  .chat-peer-pill {
+    flex: 1;
+  }
+
+  .chat-msg-body {
+    max-width: 85%;
+  }
+
+  /* Profile hero stacked on mobile */
+  .profile-hero-content {
+    padding: 24px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .profile-hero-actions {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .profile-hero-name {
+    font-size: 1.4rem;
+  }
+
+  .profile-hero-avatar {
+    width: 72px;
+    height: 72px;
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-page {
+    margin: 0 4px;
+    border-radius: var(--radius-md);
+  }
+
+  .chat-header {
+    padding: 8px 12px;
+  }
+
+  .chat-role-badge {
+    display: none;
+  }
+
+  .chat-msg-body {
+    max-width: 92%;
+  }
+}
+

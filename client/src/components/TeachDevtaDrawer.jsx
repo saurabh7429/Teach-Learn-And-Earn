@@ -1,8 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { askDevtaAI } from '../api';
 import MarkdownRenderer from './MarkdownRenderer';
+import { useAuth } from '../context/AuthContext';
 
 export default function TeachDevtaDrawer({ isOpen, onClose, initialQuery = '' }) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([
     {
       sender: 'devta',
@@ -36,6 +40,25 @@ export default function TeachDevtaDrawer({ isOpen, onClose, initialQuery = '' })
   const handleSend = async (textToSend) => {
     const q = (textToSend || input).trim();
     if (!q || loading) return;
+
+    // Show login required message if not authenticated
+    if (!user) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: 'user',
+          text: q,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        },
+        {
+          sender: 'devta',
+          text: '__LOGIN_REQUIRED__',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        },
+      ]);
+      setInput('');
+      return;
+    }
 
     const userMsg = {
       sender: 'user',
@@ -134,7 +157,31 @@ export default function TeachDevtaDrawer({ isOpen, onClose, initialQuery = '' })
                 )}
                 <div className="devta-msg-content">
                   {m.sender === 'devta' ? (
-                    <MarkdownRenderer content={m.text} />
+                    m.text === '__LOGIN_REQUIRED__' ? (
+                      <div className="devta-login-required">
+                        <div style={{ fontSize: '1.6rem', marginBottom: 8 }}>🔐</div>
+                        <p style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>Login Required</p>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 14 }}>
+                          Teach Devta use karne ke liye pehle login karo! 🙏
+                        </p>
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => { onClose(); navigate('/login'); }}
+                          >
+                            Login Karo
+                          </button>
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => { onClose(); navigate('/signup'); }}
+                          >
+                            Sign Up
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <MarkdownRenderer content={m.text} />
+                    )
                   ) : (
                     m.text
                   )}
