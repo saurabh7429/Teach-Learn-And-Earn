@@ -2,6 +2,7 @@ const express = require('express');
 const router  = express.Router();
 const Skill   = require('../models/Skill');
 const { protect } = require('../middleware/auth');
+const { sendServerError } = require('../utils/sendServerError');
 
 // @route  GET /api/skills
 // @desc   Get all skills
@@ -11,7 +12,7 @@ router.get('/', protect, async (req, res) => {
     const skills = await Skill.find().populate('teacher', 'name username').sort('-createdAt');
     res.json(skills);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendServerError(res, 'Skills list failed', err, 'Unable to load skills');
   }
 });
 
@@ -25,7 +26,7 @@ router.get('/mine', protect, async (req, res) => {
       .sort('-createdAt');
     res.json(skills);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendServerError(res, 'My skills lookup failed', err, 'Unable to load your skills');
   }
 });
 
@@ -46,7 +47,7 @@ router.post('/', protect, async (req, res) => {
 
     res.status(201).json(skill);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendServerError(res, 'Skill creation failed', err, 'Unable to add skill');
   }
 });
 
@@ -64,7 +65,7 @@ router.put('/:id/verify', protect, async (req, res) => {
     await skill.save();
     res.json(skill);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendServerError(res, 'Skill verification failed', err, 'Unable to verify skill');
   }
 });
 
@@ -81,7 +82,7 @@ router.delete('/:id', protect, async (req, res) => {
     await skill.deleteOne();
     res.json({ message: 'Skill removed' });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendServerError(res, 'Skill deletion failed', err, 'Unable to remove skill');
   }
 });
 

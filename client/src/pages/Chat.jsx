@@ -44,7 +44,7 @@ export default function Chat() {
     getChat(id)
       .then((r) => setChat(r.data))
       .catch(() => navigate('/learn'));
-  }, [id]);
+  }, [id, navigate]);
 
   // ── Auto-scroll ──
   useEffect(() => {
@@ -58,8 +58,6 @@ export default function Chat() {
   const isCompleted = chat?.status === 'completed';
 
   // Determine roles
-  const studentId =
-    chat?.request?.student?._id || chat?.request?.student;
   const teacherId =
     chat?.request?.selectedTeacher?._id || chat?.request?.selectedTeacher;
 
@@ -122,7 +120,7 @@ export default function Chat() {
         {/* ── Chat Header ── */}
         <div className="chat-header">
           <div className="chat-header-left">
-            <button className="chat-back-btn" onClick={() => navigate(-1)} title="Back">
+            <button className="chat-back-btn" onClick={() => navigate(-1)} title="Back" aria-label="Go back">
               ←
             </button>
             <div className="chat-header-info">
@@ -203,7 +201,7 @@ export default function Chat() {
         )}
 
         {/* Messages Stream */}
-        <div className="chat-messages">
+        <div className="chat-messages" role="log" aria-live="polite" aria-relevant="additions text">
           {chat.messages.length === 0 ? (
             <div className="chat-empty-state">
               <div style={{ fontSize: '2.5rem', marginBottom: 10 }}>👋</div>
@@ -254,6 +252,7 @@ export default function Chat() {
             }}
           >
             <textarea
+              id="chat-message-input"
               className="chat-input-field"
               placeholder="Type a message… (Enter to send, Shift+Enter for new line)"
               value={input}
@@ -261,17 +260,21 @@ export default function Chat() {
               onKeyDown={handleKeyDown}
               disabled={sending}
               rows={1}
+              aria-label="Type a message"
+              aria-describedby="chat-message-help"
               style={{ resize: 'none', overflowY: 'hidden', lineHeight: '1.5' }}
               onInput={(e) => {
                 e.target.style.height = 'auto';
                 e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
               }}
             />
+            <span id="chat-message-help" className="sr-only">Press Enter to send and Shift plus Enter for a new line.</span>
             <button
               type="submit"
               className="chat-send-btn"
               disabled={!input.trim() || sending}
               title="Send message"
+              aria-label="Send message"
             >
               {sending ? '…' : '➤'}
             </button>

@@ -131,7 +131,7 @@ export default function TeachDevtaDrawer({ isOpen, onClose, initialQuery = '' })
         </div>
 
         {/* Messages Stream */}
-        <div className="devta-messages-stream">
+        <div className="devta-messages-stream" role="log" aria-live="polite" aria-relevant="additions text">
           {messages.map((m, i) => (
             <div
               key={i}
@@ -194,7 +194,7 @@ export default function TeachDevtaDrawer({ isOpen, onClose, initialQuery = '' })
           {loading && (
             <div className="devta-msg-row devta-row">
               <span className="devta-mini-avatar">🤖</span>
-              <div className="devta-msg-bubble devta-bubble devta-typing">
+              <div className="devta-msg-bubble devta-bubble devta-typing" role="status" aria-live="polite" aria-label="Teach Devta is typing">
                 <span className="typing-dot" />
                 <span className="typing-dot" />
                 <span className="typing-dot" />
@@ -213,17 +213,20 @@ export default function TeachDevtaDrawer({ isOpen, onClose, initialQuery = '' })
           }}
         >
           <input
+            id="devta-drawer-input"
             type="text"
             className="devta-input-field"
             placeholder="Ask Teach Devta anything…"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={loading}
+            aria-label="Ask Teach Devta a question"
           />
           <button
             type="submit"
             className="devta-send-btn"
             disabled={!input.trim() || loading}
+            aria-label="Send question to Teach Devta"
           >
             {loading ? '…' : '⚡ Send'}
           </button>

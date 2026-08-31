@@ -3,6 +3,7 @@ const router      = express.Router();
 const Chat        = require('../models/Chat');
 const LearningRequest = require('../models/LearningRequest');
 const { protect } = require('../middleware/auth');
+const { sendServerError } = require('../utils/sendServerError');
 
 // Helper to populate chat
 const populateChat = (query) =>
@@ -26,7 +27,7 @@ router.get('/', protect, async (req, res) => {
     const chats = await populateChat(Chat.find({ participants: req.user._id })).sort('-updatedAt');
     res.json(chats);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendServerError(res, 'Chat list failed', err, 'Unable to load chats');
   }
 });
 
@@ -45,7 +46,7 @@ router.get('/:id', protect, async (req, res) => {
 
     res.json(chat);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendServerError(res, 'Chat lookup failed', err, 'Unable to load chat');
   }
 });
 
@@ -80,7 +81,7 @@ router.post('/:id/message', protect, async (req, res) => {
 
     res.status(201).json(updated);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendServerError(res, 'Chat message send failed', err, 'Unable to send message');
   }
 });
 
@@ -118,7 +119,7 @@ router.patch('/:id/complete', protect, async (req, res) => {
 
     res.json(updated);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendServerError(res, 'Chat completion failed', err, 'Unable to complete session');
   }
 });
 

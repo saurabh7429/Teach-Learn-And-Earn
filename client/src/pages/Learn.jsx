@@ -4,7 +4,7 @@ import { getMyRequests, getChats, createRequest, askDevtaAI, selectTeacher, enha
 import Modal from '../components/Modal';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 
-export default function Learn({ onOpenAI }) {
+export default function Learn() {
   const navigate = useNavigate();
   const [myRequests, setMyRequests] = useState([]);
   const [myChats, setMyChats] = useState([]);
@@ -131,7 +131,9 @@ export default function Learn({ onOpenAI }) {
         {/* Search Bar */}
         <div className="search-bar-wrapper">
           <span className="search-icon">🔍</span>
+          <label htmlFor="learn-search" className="sr-only">Search your requests</label>
           <input
+            id="learn-search"
             className="search-bar"
             type="text"
             placeholder="Search skills, learning topics, questions…"
@@ -300,8 +302,9 @@ export default function Learn({ onOpenAI }) {
         <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Create Learning Request 📝">
           <form onSubmit={handleCreateRequest}>
             <div className="form-group">
-              <label className="form-label">What do you want to learn? *</label>
+              <label className="form-label" htmlFor="learn-request-question">What do you want to learn? *</label>
               <input
+                id="learn-request-question"
                 className="form-input"
                 type="text"
                 placeholder="e.g. How does Redux Toolkit createSlice work?"
@@ -312,8 +315,9 @@ export default function Learn({ onOpenAI }) {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Related Skill or Subject</label>
+              <label className="form-label" htmlFor="learn-request-skill">Related Skill or Subject</label>
               <input
+                id="learn-request-skill"
                 className="form-input"
                 type="text"
                 placeholder="e.g. React, JavaScript, Python"
@@ -323,8 +327,9 @@ export default function Learn({ onOpenAI }) {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Details / Specific Obstacle</label>
+              <label className="form-label" htmlFor="learn-request-details">Details / Specific Obstacle</label>
               <textarea
+                id="learn-request-details"
                 className="form-textarea"
                 placeholder="Describe what you've tried and what you're stuck on… (optional)"
                 value={form.description}
@@ -353,8 +358,9 @@ export default function Learn({ onOpenAI }) {
         <Modal isOpen={showDevtaModal} onClose={() => setShowDevtaModal(false)} title="Teach Devta 🤖">
           <form onSubmit={handleAskDevta}>
             <div className="form-group">
-              <label className="form-label">Ask Teach Devta your question</label>
+              <label className="form-label" htmlFor="learn-devta-question">Ask Teach Devta your question</label>
               <input
+                id="learn-devta-question"
                 className="form-input"
                 type="text"
                 placeholder="e.g. Explain how async/await works under the hood"
@@ -367,9 +373,19 @@ export default function Learn({ onOpenAI }) {
             <button type="submit" className="btn btn-gradient btn-md" style={{ width: '100%', marginBottom: 16 }} disabled={devtaLoading}>
               {devtaLoading ? '⚡ Thinking…' : '⚡ Ask Teach Devta'}
             </button>
+            {devtaLoading && (
+              <div role="status" aria-live="polite" style={{ marginBottom: 12, color: 'var(--text-secondary)' }}>
+                Teach Devta is generating a response…
+              </div>
+            )}
 
             {devtaAnswer && (
-              <div style={{ background: 'var(--surface-inset)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: 18, maxHeight: 380, overflowY: 'auto' }}>
+              <div
+                style={{ background: 'var(--surface-inset)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: 18, maxHeight: 380, overflowY: 'auto' }}
+                role="region"
+                aria-live="polite"
+                aria-label="Teach Devta response"
+              >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                   <strong style={{ color: 'var(--accent-indigo)' }}>
                     🤖 Teach Devta:

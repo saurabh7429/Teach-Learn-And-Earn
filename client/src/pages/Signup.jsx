@@ -10,6 +10,7 @@ export default function Signup() {
   const [agreed, setAgreed] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const errorId = 'signup-error';
 
   const handleChange = (e) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
@@ -54,13 +55,18 @@ export default function Signup() {
           {/* Name */}
           <div className="neo-input-group">
             <span className="neo-input-icon">👤</span>
+            <label htmlFor="signup-name" className="sr-only">Full name</label>
             <input
+              id="signup-name"
               type="text"
               name="name"
               className="neo-input-field"
               placeholder="Full Name"
               value={form.name}
               onChange={handleChange}
+              autoComplete="name"
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? errorId : undefined}
               required
             />
           </div>
@@ -68,13 +74,18 @@ export default function Signup() {
           {/* Username */}
           <div className="neo-input-group">
             <span className="neo-input-icon">🆔</span>
+            <label htmlFor="signup-username" className="sr-only">Username</label>
             <input
+              id="signup-username"
               type="text"
               name="username"
               className="neo-input-field"
               placeholder="Username"
               value={form.username}
               onChange={handleChange}
+              autoComplete="username"
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? errorId : undefined}
               required
             />
           </div>
@@ -82,13 +93,18 @@ export default function Signup() {
           {/* Email */}
           <div className="neo-input-group">
             <span className="neo-input-icon">✉️</span>
+            <label htmlFor="signup-email" className="sr-only">Email address</label>
             <input
+              id="signup-email"
               type="email"
               name="email"
               className="neo-input-field"
               placeholder="Email Address"
               value={form.email}
               onChange={handleChange}
+              autoComplete="email"
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? errorId : undefined}
               required
             />
           </div>
@@ -96,13 +112,18 @@ export default function Signup() {
           {/* Password */}
           <div className="neo-input-group">
             <span className="neo-input-icon">🔒</span>
+            <label htmlFor="signup-password" className="sr-only">Password</label>
             <input
+              id="signup-password"
               type="password"
               name="password"
               className="neo-input-field"
               placeholder="Password"
               value={form.password}
               onChange={handleChange}
+              autoComplete="new-password"
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? errorId : undefined}
               required
             />
           </div>
@@ -110,13 +131,18 @@ export default function Signup() {
           {/* Confirm Password */}
           <div className="neo-input-group">
             <span className="neo-input-icon">🛡️</span>
+            <label htmlFor="signup-confirm-password" className="sr-only">Confirm password</label>
             <input
+              id="signup-confirm-password"
               type="password"
               name="confirm"
               className="neo-input-field"
               placeholder="Confirm Password"
               value={form.confirm}
               onChange={handleChange}
+              autoComplete="new-password"
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? errorId : undefined}
               required
             />
           </div>
@@ -125,6 +151,7 @@ export default function Signup() {
           <div className="neo-auth-row" style={{ justifyContent: 'flex-start' }}>
             <label className="neo-toggle-wrap">
               <input
+                id="signup-terms"
                 type="checkbox"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
@@ -136,7 +163,7 @@ export default function Signup() {
             </label>
           </div>
 
-          {error && <div className="neo-error-badge">{error}</div>}
+          {error && <div id={errorId} className="neo-error-badge" role="alert" aria-live="assertive">{error}</div>}
 
           {/* Submit */}
           <button type="submit" className="neo-btn-primary" disabled={loading}>

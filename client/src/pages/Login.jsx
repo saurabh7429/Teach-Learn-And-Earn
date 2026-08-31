@@ -10,6 +10,7 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const errorId = 'login-error';
 
   const handleChange = (e) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
@@ -43,13 +44,18 @@ export default function Login() {
           {/* Username / Email Field */}
           <div className="neo-input-group">
             <span className="neo-input-icon">👤</span>
+            <label htmlFor="login-email" className="sr-only">Username or Email</label>
             <input
+              id="login-email"
               type="text"
               name="email"
               className="neo-input-field"
               placeholder="Username or Email"
               value={form.email}
               onChange={handleChange}
+              autoComplete="username"
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? errorId : undefined}
               required
             />
           </div>
@@ -57,13 +63,18 @@ export default function Login() {
           {/* Password Field */}
           <div className="neo-input-group">
             <span className="neo-input-icon">🔒</span>
+            <label htmlFor="login-password" className="sr-only">Password</label>
             <input
+              id="login-password"
               type="password"
               name="password"
               className="neo-input-field"
               placeholder="Password"
               value={form.password}
               onChange={handleChange}
+              autoComplete="current-password"
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? errorId : undefined}
               required
             />
           </div>
@@ -72,6 +83,7 @@ export default function Login() {
           <div className="neo-auth-row">
             <label className="neo-toggle-wrap">
               <input
+                id="remember-me"
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
@@ -92,7 +104,7 @@ export default function Login() {
             </a>
           </div>
 
-          {error && <div className="neo-error-badge">{error}</div>}
+          {error && <div id={errorId} className="neo-error-badge" role="alert" aria-live="assertive">{error}</div>}
 
           {/* Sign In Button */}
           <button type="submit" className="neo-btn-primary" disabled={loading}>

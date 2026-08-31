@@ -3,6 +3,7 @@ const router  = express.Router();
 const jwt     = require('jsonwebtoken');
 const User    = require('../models/User');
 const { protect } = require('../middleware/auth');
+const { sendServerError } = require('../utils/sendServerError');
 
 // Generate JWT
 const generateToken = (id) =>
@@ -34,7 +35,7 @@ router.post('/register', async (req, res) => {
       token:    generateToken(user._id),
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendServerError(res, 'Auth registration failed', err, 'Unable to register user');
   }
 });
 
@@ -57,7 +58,7 @@ router.post('/login', async (req, res) => {
       token:    generateToken(user._id),
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendServerError(res, 'Auth login failed', err, 'Unable to sign in');
   }
 });
 

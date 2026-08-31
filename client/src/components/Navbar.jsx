@@ -3,7 +3,7 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar({ onOpenAI }) {
-  const { user, logoutUser } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -28,11 +28,6 @@ export default function Navbar({ onOpenAI }) {
     return null;
   }
 
-  const handleLogout = () => {
-    logoutUser();
-    navigate('/');
-  };
-
   const initials = user?.name
     ? user.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
     : 'U';
@@ -51,10 +46,10 @@ export default function Navbar({ onOpenAI }) {
     <nav className="navbar">
       <div className="navbar-inner">
         {/* Logo */}
-        <div className="navbar-logo" onClick={() => navigate('/')}>
+        <NavLink to="/" end className="navbar-logo" aria-label="Go to home page">
           <div className="logo-badge">TL&amp;E</div>
           <span className="logo-text">Teach, Learn &amp; Earn</span>
-        </div>
+        </NavLink>
 
         {/* Desktop Nav links */}
         <div className="navbar-nav desktop-only">
@@ -98,14 +93,21 @@ export default function Navbar({ onOpenAI }) {
                 className="notif-btn" 
                 title="Notifications"
                 onClick={() => navigate('/requests')}
+                aria-label="View notifications"
               >
                 🔔
                 <span className="notif-badge">3</span>
               </button>
-              <div className="profile-btn" onClick={() => navigate('/profile')} title="View Profile">
+              <button
+                type="button"
+                className="profile-btn"
+                onClick={() => navigate('/profile')}
+                title="View Profile"
+                aria-label="Open profile menu"
+              >
                 <div className="profile-avatar">{initials}</div>
                 <span className="profile-name">{user?.name?.split(' ')[0] ?? 'User'} ▾</span>
-              </div>
+              </button>
             </>
           ) : (
             <div className="auth-btn-group">
@@ -123,6 +125,8 @@ export default function Navbar({ onOpenAI }) {
             className="mobile-menu-btn"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle Navigation Menu"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-nav-drawer"
           >
             {mobileMenuOpen ? '✕' : '☰'}
           </button>
@@ -131,7 +135,7 @@ export default function Navbar({ onOpenAI }) {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="mobile-nav-drawer page-enter">
+        <div className="mobile-nav-drawer page-enter" id="mobile-nav-drawer">
           {navItems.map(({ to, label }) => (
             <NavLink
               key={to}
