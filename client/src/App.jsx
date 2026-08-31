@@ -42,25 +42,27 @@ function AppRoutes() {
         onClose={() => setAiOpen(false)} 
         initialQuery={aiQuery} 
       />
-      <Routes>
-        {/* Public Landing & Home */}
-        <Route path="/" element={<Home onOpenAI={openAIWithQuery} />} />
+      <main id="main-content" className="app-main" tabIndex={-1}>
+        <Routes>
+          {/* Public Landing & Home */}
+          <Route path="/" element={<Home onOpenAI={openAIWithQuery} />} />
 
-        {/* Auth routes */}
-        <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
-        <Route path="/signup" element={<PublicOnlyRoute><Signup /></PublicOnlyRoute>} />
+          {/* Auth routes */}
+          <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
+          <Route path="/signup" element={<PublicOnlyRoute><Signup /></PublicOnlyRoute>} />
 
-        {/* Protected workspace routes */}
-        <Route path="/learn" element={<ProtectedRoute><Learn onOpenAI={openAIWithQuery} /></ProtectedRoute>} />
-        <Route path="/teach" element={<ProtectedRoute><Teach onOpenAI={openAIWithQuery} /></ProtectedRoute>} />
-        <Route path="/requests" element={<ProtectedRoute><Requests /></ProtectedRoute>} />
-        <Route path="/progress" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
-        <Route path="/chat/:id" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-        
-        {/* Catch-all redirect to Home */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+          {/* Protected workspace routes */}
+          <Route path="/learn" element={<ProtectedRoute><Learn onOpenAI={openAIWithQuery} /></ProtectedRoute>} />
+          <Route path="/teach" element={<ProtectedRoute><Teach onOpenAI={openAIWithQuery} /></ProtectedRoute>} />
+          <Route path="/requests" element={<ProtectedRoute><Requests /></ProtectedRoute>} />
+          <Route path="/progress" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
+          <Route path="/chat/:id" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          
+          {/* Catch-all redirect to Home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
     </>
   );
 }

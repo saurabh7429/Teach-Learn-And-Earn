@@ -4,6 +4,7 @@ const Skill           = require('../models/Skill');
 const LearningRequest = require('../models/LearningRequest');
 const Chat            = require('../models/Chat');
 const { protect }     = require('../middleware/auth');
+const { sendServerError } = require('../utils/sendServerError');
 
 // @route  GET /api/progress
 // @desc   Get combined learning + teaching progress for current user
@@ -40,7 +41,7 @@ router.get('/', protect, async (req, res) => {
       totalSessions: myChats.reduce((sum, c) => sum + c.messages.length, 0),
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendServerError(res, 'Progress lookup failed', err, 'Unable to load progress');
   }
 });
 

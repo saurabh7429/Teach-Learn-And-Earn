@@ -3,6 +3,7 @@ const router          = express.Router();
 const LearningRequest = require('../models/LearningRequest');
 const Chat            = require('../models/Chat');
 const { protect }     = require('../middleware/auth');
+const { sendServerError } = require('../utils/sendServerError');
 
 
 // @route  POST /api/requests
@@ -23,7 +24,7 @@ router.post('/', protect, async (req, res) => {
     const populated = await request.populate('student', 'name username');
     res.status(201).json(populated);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendServerError(res, 'Request creation failed', err, 'Unable to create request');
   }
 });
 
@@ -39,7 +40,7 @@ router.get('/my', protect, async (req, res) => {
       .sort('-createdAt');
     res.json(requests);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendServerError(res, 'My requests lookup failed', err, 'Unable to load requests');
   }
 });
 
@@ -57,7 +58,7 @@ router.get('/teaching', protect, async (req, res) => {
       .sort('-createdAt');
     res.json(requests);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendServerError(res, 'Teaching feed lookup failed', err, 'Unable to load teaching feed');
   }
 });
 
@@ -107,7 +108,7 @@ router.get('/by-skill/:skill', protect, async (req, res) => {
       openRequests,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendServerError(res, 'Requests by skill lookup failed', err, 'Unable to load requests for that skill');
   }
 });
 
@@ -120,7 +121,7 @@ router.delete('/clear-all', protect, async (req, res) => {
     await require('../models/Chat').deleteMany({});
     res.json({ message: 'All requests and chats cleared.' });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendServerError(res, 'Clear all requests failed', err, 'Unable to clear requests');
   }
 });
 
@@ -149,7 +150,7 @@ router.post('/:id/offer', protect, async (req, res) => {
     const populated = await request.populate('teacherResponses.teacher', 'name username');
     res.json(populated);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendServerError(res, 'Offer creation failed', err, 'Unable to submit offer');
   }
 });
 
@@ -204,7 +205,7 @@ router.post('/:id/select', protect, async (req, res) => {
 
     res.json(populated);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    return sendServerError(res, 'Teacher selection failed', err, 'Unable to select teacher');
   }
 });
 

@@ -340,8 +340,9 @@ export default function Teach({ onOpenAI }) {
         <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Add Teaching Skill 🎓">
           <form onSubmit={handleAddSkill}>
             <div className="form-group">
-              <label className="form-label">Skill Name *</label>
+              <label className="form-label" htmlFor="teach-skill-name">Skill Name *</label>
               <input
+                id="teach-skill-name"
                 className="form-input"
                 type="text"
                 placeholder="e.g. C++, React, Node.js, Python, DSA"
@@ -351,8 +352,9 @@ export default function Teach({ onOpenAI }) {
               />
             </div>
             <div className="form-group">
-              <label className="form-label">Experience &amp; What You Can Teach</label>
+              <label className="form-label" htmlFor="teach-skill-description">Experience &amp; What You Can Teach</label>
               <textarea
+                id="teach-skill-description"
                 className="form-textarea"
                 placeholder="Describe your background and what topics you specialize in…"
                 value={form.description}
