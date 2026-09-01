@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { verifyResetToken, resetPassword } from '../api';
+import AuthTopBar from '../components/AuthTopBar';
 
 export default function ResetPassword() {
   const { token } = useParams();
@@ -85,6 +86,7 @@ export default function ResetPassword() {
 
   return (
     <div className="auth-neo-wrapper page-enter">
+      <AuthTopBar />
       <div className="neo-disc-card">
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
           <div className="logo-badge" style={{ fontSize: '1rem', padding: '8px 16px' }}>TL&amp;E</div>

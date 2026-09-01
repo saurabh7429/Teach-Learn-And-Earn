@@ -23,9 +23,9 @@ export default function Navbar({ onOpenAI }) {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
 
-  // Hide Navbar on standalone auth pages
+  // Hide Navbar on standalone auth and legal pages (they have their own AuthTopBar)
   if (
-    ['/login', '/signup', '/forgot-password'].includes(location.pathname) ||
+    ['/login', '/signup', '/forgot-password', '/terms', '/privacy'].includes(location.pathname) ||
     location.pathname.startsWith('/reset-password')
   ) {
     return null;

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../api';
 import { useAuth } from '../context/AuthContext';
+import AuthTopBar from '../components/AuthTopBar';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ export default function Login() {
 
   return (
     <div className="auth-neo-wrapper page-enter">
+      <AuthTopBar />
       <div className="neo-disc-card">
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
           <div className="logo-badge" style={{ fontSize: '1rem', padding: '8px 16px' }}>TL&amp;E</div>

@@ -63,3 +63,67 @@ test('Learn, Teach, Chat and AI drawer inputs have accessible names and live reg
   assert.match(drawer, /role="log"/);
   assert.match(drawer, /aria-label="Send question to Teach Devta"/);
 });
+
+test('Legal pages exist and have proper heading structure', () => {
+  const terms = read('src/pages/Terms.jsx');
+  const privacy = read('src/pages/Privacy.jsx');
+
+  // Terms has h1 and multiple h2 sections
+  assert.match(terms, /<h1>/);
+  assert.match(terms, /<h2/);
+  assert.match(terms, /aria-labelledby=/);
+  // Privacy has h1 and multiple h2 sections
+  assert.match(privacy, /<h1>/);
+  assert.match(privacy, /<h2/);
+  assert.match(privacy, /aria-labelledby=/);
+  // Both use AuthTopBar
+  assert.match(terms, /AuthTopBar/);
+  assert.match(privacy, /AuthTopBar/);
+  // Both have navigation back
+  assert.match(terms, /to="\/signup"/);
+  assert.match(privacy, /to="\/signup"/);
+});
+
+test('Signup consent checkbox defaults unchecked and links are accessible', () => {
+  const signup = read('src/pages/Signup.jsx');
+
+  // Defaults to false (unchecked) — MUST NOT be useState(true)
+  assert.match(signup, /useState\(false\)/);
+  assert.doesNotMatch(signup, /useState\(true\)/);
+
+  // Legal links point to real routes (not href="#")
+  assert.match(signup, /href="\/terms"/);
+  assert.match(signup, /href="\/privacy"/);
+
+  // Links open in new tab to preserve form state
+  assert.match(signup, /target="_blank"/);
+  assert.match(signup, /rel="noopener noreferrer"/);
+
+  // Accessible names for legal links
+  assert.match(signup, /aria-label="Terms of Service \(opens in a new tab\)"/);
+  assert.match(signup, /aria-label="Privacy Policy \(opens in a new tab\)"/);
+
+  // Consent fields sent to server
+  assert.match(signup, /consentGiven: true/);
+  assert.match(signup, /consentVersion/);
+});
+
+test('AuthTopBar is accessible and present on all standalone auth pages', () => {
+  const topBar = read('src/components/AuthTopBar.jsx');
+  const login = read('src/pages/Login.jsx');
+  const signup = read('src/pages/Signup.jsx');
+  const forgot = read('src/pages/ForgotPassword.jsx');
+  const reset = read('src/pages/ResetPassword.jsx');
+
+  // AuthTopBar itself has accessible structure
+  assert.match(topBar, /aria-label="Authentication navigation"/);
+  assert.match(topBar, /aria-label="Back to home page"/);
+  assert.match(topBar, /to="\/"/) ; // links home
+
+  // All auth pages include AuthTopBar
+  assert.match(login, /AuthTopBar/);
+  assert.match(signup, /AuthTopBar/);
+  assert.match(forgot, /AuthTopBar/);
+  assert.match(reset, /AuthTopBar/);
+});
+

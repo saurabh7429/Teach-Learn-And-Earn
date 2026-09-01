@@ -1,0 +1,51 @@
+- main [ref=f4e3]:
+  - generic [ref=f4e4]:
+    - navigation "Authentication navigation" [ref=f4e5]:
+      - link "Back to home page" [ref=f4e6] [cursor=pointer]:
+        - /url: /
+        - generic [aria-hidden] [ref=f4e7]: TL&E
+        - generic [ref=f4e8]: Back to Home
+    - generic [ref=f4e9]:
+      - generic [ref=f4e10]: TL&E
+      - heading "Create Account" [level=1] [ref=f4e12]
+      - paragraph [ref=f4e13]: Join the peer-to-peer skill exchange platform
+      - generic [ref=f4e14]:
+        - generic [ref=f4e15]:
+          - generic: 👤
+          - generic [ref=f4e16]: Full name
+          - textbox "Full name" [ref=f4e17]:
+            - /placeholder: Full Name
+        - generic [ref=f4e18]:
+          - generic: 🆔
+          - generic [ref=f4e19]: Username
+          - textbox "Username" [ref=f4e20]
+        - generic [ref=f4e21]:
+          - generic: ✉️
+          - generic [ref=f4e22]: Email address
+          - textbox "Email address" [ref=f4e23]:
+            - /placeholder: Email Address
+        - generic [ref=f4e24]:
+          - generic: 🔒
+          - generic [ref=f4e25]: Password
+          - textbox "Password" [ref=f4e26]
+        - generic [ref=f4e27]:
+          - generic: 🛡️
+          - generic [ref=f4e28]: Confirm password
+          - textbox "Confirm password" [ref=f4e29]:
+            - /placeholder: Confirm Password
+        - generic [ref=f4e31] [cursor=pointer]:
+          - checkbox "I accept the Terms of Service (opens in a new tab) & Privacy Policy (opens in a new tab)" [ref=f4e32]
+          - generic [ref=f4e33]:
+            - text: I accept the
+            - link "Terms of Service (opens in a new tab)" [ref=f4e34]:
+              - /url: /terms
+              - text: Terms of Service
+            - text: "&"
+            - link "Privacy Policy (opens in a new tab)" [ref=f4e35]:
+              - /url: /privacy
+              - text: Privacy Policy
+        - button "START LEARNING & TEACHING 🚀" [disabled] [ref=f4e36] [cursor=pointer]
+        - paragraph [ref=f4e37]:
+          - text: Already have an account?
+          - link "Sign In" [ref=f4e38] [cursor=pointer]:
+            - /url: /login

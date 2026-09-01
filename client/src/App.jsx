@@ -7,6 +7,8 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
 import Home from './pages/Home';
 import Learn from './pages/Learn';
 import Teach from './pages/Teach';
@@ -54,6 +56,10 @@ function AppRoutes() {
           <Route path="/signup" element={<PublicOnlyRoute><Signup /></PublicOnlyRoute>} />
           <Route path="/forgot-password" element={<PublicOnlyRoute><ForgotPassword /></PublicOnlyRoute>} />
           <Route path="/reset-password/:token" element={<PublicOnlyRoute><ResetPassword /></PublicOnlyRoute>} />
+
+          {/* Legal pages — fully public, no auth guard */}
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
 
           {/* Protected workspace routes */}
           <Route path="/learn" element={<ProtectedRoute><Learn onOpenAI={openAIWithQuery} /></ProtectedRoute>} />

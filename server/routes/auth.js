@@ -14,12 +14,28 @@ const generateToken = (id) =>
 // @route  POST /api/auth/register
 // @desc   Register a new user
 // @access Public
+// Legal consent version expected at registration time
+const CURRENT_CONSENT_VERSION = '1.0';
+
 router.post('/register', async (req, res) => {
   try {
-    const { name, username, email, password } = req.body;
+    const { name, username, email, password, consentGiven, consentVersion } = req.body;
 
     if (!name || !username || !email || !password)
       return res.status(400).json({ message: 'Please fill all fields' });
+
+    // Server-side consent enforcement — client-side alone is NOT sufficient
+    if (consentGiven !== true) {
+      return res.status(400).json({
+        message: 'You must accept the Terms of Service and Privacy Policy to register.',
+      });
+    }
+
+    if (!consentVersion || consentVersion !== CURRENT_CONSENT_VERSION) {
+      return res.status(400).json({
+        message: `Invalid or outdated consent version. Please reload the page and try again.`,
+      });
+    }
 
     if (await User.findOne({ email }))
       return res.status(400).json({ message: 'Email already registered' });
@@ -27,7 +43,15 @@ router.post('/register', async (req, res) => {
     if (await User.findOne({ username }))
       return res.status(400).json({ message: 'Username already taken' });
 
-    const user = await User.create({ name, username, email, password });
+    const user = await User.create({
+      name,
+      username,
+      email,
+      password,
+      consentGiven: true,
+      consentVersion,
+      consentAt: new Date(),
+    });
 
     res.status(201).json({
       _id:      user._id,

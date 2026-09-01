@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { forgotPassword } from '../api';
+import AuthTopBar from '../components/AuthTopBar';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -36,6 +37,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="auth-neo-wrapper page-enter">
+      <AuthTopBar />
       <div className="neo-disc-card">
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
           <div className="logo-badge" style={{ fontSize: '1rem', padding: '8px 16px' }}>TL&amp;E</div>

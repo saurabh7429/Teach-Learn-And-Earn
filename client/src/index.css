@@ -921,12 +921,162 @@ button, input, textarea, select {
 /* ══════════════════════════════════════════════════════════════════
    11. AUTH DISC CARD (3D TACTILE AUTH & ROCK-SOLID CLICKS)
    ══════════════════════════════════════════════════════════════════ */
+
+/* Auth top navigation bar — home link on all standalone auth pages */
+.auth-top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  padding: 12px 24px;
+  background: rgba(15, 17, 23, 0.85);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+
+.auth-top-bar__home {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  transition: var(--transition-fast);
+  min-height: 44px; /* touch target */
+  min-width: 44px;
+}
+
+.auth-top-bar__home:hover {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+}
+
+.auth-top-bar__home:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.auth-top-bar__logo {
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, var(--primary) 0%, #DC2626 100%);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.auth-top-bar__back-label {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 375px) {
+  .auth-top-bar__back-label {
+    display: none;
+  }
+}
+
+/* Legal pages (Terms / Privacy) */
+.auth-legal-page {
+  min-height: 100vh;
+  padding: 96px 20px 60px;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.auth-legal-page h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.auth-legal-meta {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 36px;
+}
+
+.auth-legal-section {
+  margin-bottom: 32px;
+}
+
+.auth-legal-section h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.auth-legal-section p,
+.auth-legal-section li {
+  font-size: 0.93rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+  margin-bottom: 8px;
+}
+
+.auth-legal-section ul {
+  padding-left: 20px;
+}
+
+.auth-legal-todo {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid var(--warning);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  color: var(--warning);
+  margin: 10px 0;
+  font-style: italic;
+}
+
+.auth-legal-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+  margin-top: 40px;
+}
+
+.auth-legal-nav a {
+  font-size: 0.88rem;
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--primary-light);
+  transition: var(--transition-fast);
+}
+
+.auth-legal-nav a:hover {
+  background: var(--primary-light);
+}
+
+.auth-legal-nav a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 .auth-neo-wrapper {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 40px 20px;
+  padding: 90px 20px 40px; /* top pad accounts for fixed AuthTopBar */
   position: relative;
   z-index: 10;
 }

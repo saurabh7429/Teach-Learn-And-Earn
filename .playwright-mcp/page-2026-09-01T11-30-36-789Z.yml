@@ -1,0 +1,126 @@
+- main [ref=f7e3]:
+  - navigation "Authentication navigation" [ref=f7e4]:
+    - link "Back to home page" [ref=f7e5] [cursor=pointer]:
+      - /url: /
+      - generic [aria-hidden] [ref=f7e6]: TL&E
+      - generic [ref=f7e7]: Back to Home
+  - main [ref=f7e8]:
+    - heading "Privacy Policy" [level=1] [ref=f7e9]
+    - paragraph [ref=f7e10]: "Version 1.0 · Last updated: September 2026[TODO: OWNER REVIEW] Update the effective date before production launch."
+    - region [ref=f7e11]:
+      - heading "1. Introduction" [level=2] [ref=f7e12]
+      - paragraph [ref=f7e13]:
+        - strong [ref=f7e14]: Teach, Learn & Earn
+        - text: ("we", "us", or "our") is committed to protecting your personal information. This Privacy Policy explains what data we collect, how we use it, and your rights with respect to that data.
+      - paragraph [ref=f7e15]: By registering for or using the Platform, you agree to the collection and use of information in accordance with this Privacy Policy.
+      - generic [ref=f7e16]: "[TODO: OWNER REVIEW] Identify the data controller (company name, registration number, and registered address)."
+    - region [ref=f7e17]:
+      - heading "2. Information We Collect" [level=2] [ref=f7e18]
+      - paragraph [ref=f7e19]: "We collect the following categories of personal data:"
+      - list [ref=f7e20]:
+        - listitem [ref=f7e21]:
+          - strong [ref=f7e22]: "Registration data:"
+          - text: your name, username, email address, and password (stored as a bcrypt hash — we never store plain-text passwords).
+        - listitem [ref=f7e23]:
+          - strong [ref=f7e24]: "Consent record:"
+          - text: whether you accepted these terms, the version of the legal documents you agreed to, and the timestamp of your consent.
+        - listitem [ref=f7e25]:
+          - strong [ref=f7e26]: "Usage data:"
+          - text: skills you post, learning requests you make, messages you send, and your learning progress records.
+        - listitem [ref=f7e27]:
+          - strong [ref=f7e28]: "Technical data:"
+          - text: IP address, browser type, and access timestamps, collected automatically through standard server logs.
+        - listitem [ref=f7e29]:
+          - strong [ref=f7e30]: "Communications:"
+          - text: content of chat messages sent via the Platform.
+      - paragraph [ref=f7e31]: We do not collect payment information directly.
+      - generic [ref=f7e32]: "[TODO: OWNER REVIEW] If payment processing is added in future, update this section."
+    - region [ref=f7e33]:
+      - heading "3. How We Use Your Information" [level=2] [ref=f7e34]
+      - paragraph [ref=f7e35]: "We use the information we collect to:"
+      - list [ref=f7e36]:
+        - listitem [ref=f7e37]: Create and manage your account.
+        - listitem [ref=f7e38]: Operate and improve the peer-to-peer skill exchange features of the Platform.
+        - listitem [ref=f7e39]: Enable real-time communication between users.
+        - listitem [ref=f7e40]: Provide AI-powered learning assistance (your queries may be sent to a third-party AI provider — see Section 5).
+        - listitem [ref=f7e41]: Send transactional emails such as password reset instructions.
+        - listitem [ref=f7e42]: Ensure the security and integrity of the Platform.
+        - listitem [ref=f7e43]: Comply with legal obligations.
+      - paragraph [ref=f7e44]: We do not sell your personal data to third parties.
+    - region [ref=f7e45]:
+      - heading "4. Legal Basis for Processing" [level=2] [ref=f7e46]
+      - generic [ref=f7e47]: "[TODO: OWNER REVIEW] If operating in the EU/EEA, UK, or similar jurisdictions, specify the legal basis for each processing activity (e.g., contract performance, legitimate interests, consent) to comply with GDPR or equivalent regulations."
+      - paragraph [ref=f7e48]: We process your personal data on the basis of the contract between you and us (i.e., your account agreement), our legitimate interests in operating the Platform securely, and your explicit consent where required.
+    - region [ref=f7e49]:
+      - heading "5. Third-Party Services" [level=2] [ref=f7e50]
+      - paragraph [ref=f7e51]: "We may share limited data with the following categories of third-party service providers to operate the Platform:"
+      - list [ref=f7e52]:
+        - listitem [ref=f7e53]:
+          - strong [ref=f7e54]: "Cloud infrastructure / hosting:"
+          - text: servers and databases where your data is stored.
+        - listitem [ref=f7e55]:
+          - strong [ref=f7e56]: "Email delivery:"
+          - text: transactional email providers used to send password reset and notification emails.
+        - listitem [ref=f7e57]:
+          - strong [ref=f7e58]: "AI services:"
+          - text: when you use the Teach Devta AI assistant, your query is transmitted to a third-party AI provider to generate a response.
+      - generic [ref=f7e59]: "[TODO: OWNER REVIEW] Name specific third-party providers (e.g., Google Cloud, SendGrid, Google Gemini) and link to their respective privacy policies."
+      - paragraph [ref=f7e60]: All third-party providers are contractually required to handle your data in accordance with applicable data protection laws and this Privacy Policy.
+    - region [ref=f7e61]:
+      - heading "6. Data Storage & Security" [level=2] [ref=f7e62]
+      - paragraph [ref=f7e63]: Your data is stored on secured servers protected by industry-standard measures including encrypted connections (TLS), access controls, and regular security reviews.
+      - paragraph [ref=f7e64]: Passwords are stored as bcrypt hashes. Password reset tokens are stored only as SHA-256 hashes and expire after one hour.
+      - paragraph [ref=f7e65]: While we take reasonable precautions to protect your data, no method of electronic transmission or storage is 100% secure.
+      - generic [ref=f7e66]: "[TODO: OWNER REVIEW] Specify data retention periods (e.g., how long inactive accounts or deleted data is retained before permanent erasure)."
+    - region [ref=f7e67]:
+      - heading "7. Your Rights" [level=2] [ref=f7e68]
+      - paragraph [ref=f7e69]: "Depending on your jurisdiction, you may have the following rights regarding your personal data:"
+      - list [ref=f7e70]:
+        - listitem [ref=f7e71]:
+          - strong [ref=f7e72]: "Access:"
+          - text: request a copy of the personal data we hold about you.
+        - listitem [ref=f7e73]:
+          - strong [ref=f7e74]: "Rectification:"
+          - text: request correction of inaccurate or incomplete data.
+        - listitem [ref=f7e75]:
+          - strong [ref=f7e76]: "Erasure:"
+          - text: request deletion of your personal data ("right to be forgotten").
+        - listitem [ref=f7e77]:
+          - strong [ref=f7e78]: "Portability:"
+          - text: request your data in a structured, machine-readable format.
+        - listitem [ref=f7e79]:
+          - strong [ref=f7e80]: "Restriction:"
+          - text: request that we restrict processing of your data in certain circumstances.
+        - listitem [ref=f7e81]:
+          - strong [ref=f7e82]: "Objection:"
+          - text: object to processing based on legitimate interests.
+        - listitem [ref=f7e83]:
+          - strong [ref=f7e84]: "Withdraw consent:"
+          - text: where processing is based on consent, withdraw it at any time.
+      - paragraph [ref=f7e85]: To exercise any of these rights, please contact us using the details in Section 9.
+      - generic [ref=f7e86]: "[TODO: OWNER REVIEW] Confirm which rights apply in your jurisdiction and add the name of the supervisory authority users may lodge complaints with (e.g., ICO in the UK)."
+    - region [ref=f7e87]:
+      - heading "8. Cookies & Local Storage" [level=2] [ref=f7e88]
+      - paragraph [ref=f7e89]:
+        - text: The Platform uses browser
+        - strong [ref=f7e90]: localStorage
+        - text: to store your authentication token (JWT) on your device. This token is used to keep you signed in between sessions. It is never transmitted to third parties.
+      - paragraph [ref=f7e91]: We do not currently use advertising or tracking cookies.
+      - generic [ref=f7e92]: "[TODO: OWNER REVIEW] If analytics or advertising cookies are added in future, a cookie consent banner will be required in applicable jurisdictions (e.g., EU/UK ePrivacy)."
+    - region [ref=f7e93]:
+      - heading "9. Children's Privacy" [level=2] [ref=f7e94]
+      - paragraph [ref=f7e95]: The Platform is not directed to children under 13 years of age (or the minimum age of digital consent in your jurisdiction). We do not knowingly collect personal data from children. If you believe a child has provided us with personal data, please contact us so we can delete it promptly.
+      - generic [ref=f7e96]: "[TODO: OWNER REVIEW] Confirm minimum age and jurisdiction-specific requirements."
+    - region [ref=f7e97]:
+      - heading "10. Contact & Complaints" [level=2] [ref=f7e98]
+      - paragraph [ref=f7e99]: "For questions about this Privacy Policy or to exercise your rights, please contact us at:"
+      - generic [ref=f7e100]: "[TODO: OWNER REVIEW] Add contact email, postal address, and Data Protection Officer details if required by applicable law."
+    - navigation "Legal page navigation" [ref=f7e101]:
+      - link "Terms of Service" [ref=f7e102] [cursor=pointer]:
+        - /url: /terms
+      - link "← Back to Sign Up" [ref=f7e103] [cursor=pointer]:
+        - /url: /signup
+      - link "Sign In" [ref=f7e104] [cursor=pointer]:
+        - /url: /login
+      - link "Home" [ref=f7e105] [cursor=pointer]:
+        - /url: /

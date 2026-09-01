@@ -2,12 +2,16 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { register } from '../api';
 import { useAuth } from '../context/AuthContext';
+import AuthTopBar from '../components/AuthTopBar';
+
+// Must match CURRENT_CONSENT_VERSION in server/routes/auth.js
+const CONSENT_VERSION = '1.0';
 
 export default function Signup() {
   const navigate = useNavigate();
   const { loginUser } = useAuth();
   const [form, setForm] = useState({ name: '', username: '', email: '', password: '', confirm: '' });
-  const [agreed, setAgreed] = useState(true);
+  const [agreed, setAgreed] = useState(false); // Must default to false — user must explicitly consent
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const errorId = 'signup-error';
@@ -18,12 +22,15 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
     if (form.password !== form.confirm) {
       return setError('Passwords do not match.');
     }
+
     if (!agreed) {
-      return setError('Please accept the Terms & Policy.');
+      return setError('Please accept the Terms of Service and Privacy Policy to continue.');
     }
+
     setLoading(true);
     try {
       const { data } = await register({
@@ -31,6 +38,9 @@ export default function Signup() {
         username: form.username,
         email: form.email,
         password: form.password,
+        // Server-side consent enforcement fields
+        consentGiven: true,
+        consentVersion: CONSENT_VERSION,
       });
       loginUser(data, data.token);
       navigate('/');
@@ -43,6 +53,7 @@ export default function Signup() {
 
   return (
     <div className="auth-neo-wrapper page-enter">
+      <AuthTopBar />
       <div className="neo-disc-card neo-disc-lg">
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
           <div className="logo-badge" style={{ fontSize: '1rem', padding: '8px 16px' }}>TL&amp;E</div>
@@ -147,18 +158,40 @@ export default function Signup() {
             />
           </div>
 
-          {/* Agreement toggle */}
+          {/* Consent checkbox — MUST default unchecked, user must explicitly consent */}
           <div className="neo-auth-row" style={{ justifyContent: 'flex-start' }}>
-            <label className="neo-toggle-wrap">
+            <label className="neo-toggle-wrap" htmlFor="signup-terms">
               <input
                 id="signup-terms"
                 type="checkbox"
                 checked={agreed}
                 onChange={(e) => setAgreed(e.target.checked)}
                 className="neo-toggle-checkbox"
+                aria-required="true"
+                aria-describedby={error ? errorId : undefined}
               />
               <span className="neo-toggle-label">
-                I accept the <a href="#" style={{ color: 'var(--primary)', fontWeight: 600 }}>Terms of Service</a> &amp; Privacy Policy
+                I accept the{' '}
+                {/* Opens in new tab to preserve form state without any global state library */}
+                <a
+                  href="/terms"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: 'var(--primary)', fontWeight: 600 }}
+                  aria-label="Terms of Service (opens in a new tab)"
+                >
+                  Terms of Service
+                </a>
+                {' '}&amp;{' '}
+                <a
+                  href="/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: 'var(--primary)', fontWeight: 600 }}
+                  aria-label="Privacy Policy (opens in a new tab)"
+                >
+                  Privacy Policy
+                </a>
               </span>
             </label>
           </div>
@@ -166,7 +199,7 @@ export default function Signup() {
           {error && <div id={errorId} className="neo-error-badge" role="alert" aria-live="assertive">{error}</div>}
 
           {/* Submit */}
-          <button type="submit" className="neo-btn-primary" disabled={loading}>
+          <button type="submit" className="neo-btn-primary" disabled={loading || !agreed}>
             {loading ? 'CREATING ACCOUNT…' : 'START LEARNING & TEACHING 🚀'}
           </button>
 
