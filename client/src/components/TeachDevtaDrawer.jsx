@@ -18,6 +18,7 @@ export default function TeachDevtaDrawer({ isOpen, onClose, initialQuery = '' })
   const [loading, setLoading] = useState(false);
   const [copiedIdx, setCopiedIdx] = useState(null);
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     if (initialQuery && isOpen) {
@@ -29,7 +30,32 @@ export default function TeachDevtaDrawer({ isOpen, onClose, initialQuery = '' })
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
+  // Escape key closes the drawer; focus moves into input on open
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    const focusTimer = window.setTimeout(() => {
+      inputRef.current?.focus();
+    }, 50);
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' || e.keyCode === 27) {
+        e.preventDefault();
+        e.stopPropagation();
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown, true);
+
+    return () => {
+      window.clearTimeout(focusTimer);
+      window.removeEventListener('keydown', handleKeyDown, true);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
+
 
   const handleCopyText = (text, idx) => {
     navigator.clipboard.writeText(text);
@@ -213,6 +239,7 @@ export default function TeachDevtaDrawer({ isOpen, onClose, initialQuery = '' })
           }}
         >
           <input
+            ref={inputRef}
             id="devta-drawer-input"
             type="text"
             className="devta-input-field"

@@ -11,9 +11,12 @@ api.interceptors.request.use((config) => {
 });
 
 // Auth
-export const register  = (data)  => api.post('/auth/register', data);
-export const login     = (data)  => api.post('/auth/login', data);
-export const getMe     = ()      => api.get('/auth/me');
+export const register         = (data)         => api.post('/auth/register', data);
+export const login            = (data)         => api.post('/auth/login', data);
+export const getMe            = ()             => api.get('/auth/me');
+export const forgotPassword   = (data)         => api.post('/auth/forgot-password', data);
+export const verifyResetToken = (token)        => api.get(`/auth/verify-reset-token/${encodeURIComponent(token)}`);
+export const resetPassword    = (token, data)  => api.post(`/auth/reset-password/${encodeURIComponent(token)}`, data);
 
 // Skills
 export const getMySkills   = ()      => api.get('/skills/mine');

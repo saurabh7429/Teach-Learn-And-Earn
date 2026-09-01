@@ -24,7 +24,10 @@ export default function Navbar({ onOpenAI }) {
   };
 
   // Hide Navbar on standalone auth pages
-  if (['/login', '/signup'].includes(location.pathname)) {
+  if (
+    ['/login', '/signup', '/forgot-password'].includes(location.pathname) ||
+    location.pathname.startsWith('/reset-password')
+  ) {
     return null;
   }
 
@@ -146,6 +149,18 @@ export default function Navbar({ onOpenAI }) {
               {label}
             </NavLink>
           ))}
+          <button
+            type="button"
+            className="mobile-nav-link"
+            style={{ textAlign: 'left', background: 'none', border: 'none', width: '100%', cursor: 'pointer', fontFamily: 'inherit' }}
+            onClick={() => {
+              setMobileMenuOpen(false);
+              onOpenAI();
+            }}
+            aria-label="Open Teach Devta AI"
+          >
+            🤖 Ask Teach Devta
+          </button>
         </div>
       )}
     </nav>

@@ -1,0 +1,8 @@
+- main [ref=f3e3]:
+  - generic [ref=f3e5]:
+    - generic [ref=f3e6]: TL&E
+    - heading "Set New Password" [level=1] [ref=f3e8]
+    - paragraph [ref=f3e9]: Create a strong, secure password for your account.
+    - generic [ref=f3e10]:
+      - status "Verifying reset link" [ref=f3e11]
+      - paragraph [ref=f3e12]: Verifying your reset link…

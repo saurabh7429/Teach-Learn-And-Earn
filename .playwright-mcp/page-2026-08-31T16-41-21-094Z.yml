@@ -1,0 +1,25 @@
+- main [ref=f8e17]:
+  - generic [ref=f8e61]:
+    - generic [ref=f8e62]: TL&E
+    - heading "Welcome Back" [level=1] [ref=f8e64]
+    - paragraph [ref=f8e65]: Sign in to your learning & teaching workspace
+    - generic [ref=f8e66]:
+      - generic [ref=f8e67]:
+        - generic: 👤
+        - generic [ref=f8e68]: Username or Email
+        - textbox "Username or Email" [ref=f8e69]: invalid_qa_user@example.test
+      - generic [ref=f8e70]:
+        - generic: 🔒
+        - generic [ref=f8e71]: Password
+        - textbox "Password" [ref=f8e72]: wrongpassword123
+      - generic [ref=f8e73]:
+        - generic [ref=f8e74] [cursor=pointer]:
+          - checkbox "Remember me" [ref=f8e75]
+          - generic [ref=f8e76]: Remember me
+        - link "Forgot password?" [ref=f8e77] [cursor=pointer]:
+          - /url: "#"
+      - button "SIGNING IN…" [disabled] [ref=f8e81] [cursor=pointer]
+      - paragraph [ref=f8e79]:
+        - text: Don't have an account?
+        - link "Create Account" [ref=f8e80] [cursor=pointer]:
+          - /url: /signup

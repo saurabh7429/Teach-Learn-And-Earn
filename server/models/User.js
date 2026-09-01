@@ -8,6 +8,13 @@ const userSchema = new mongoose.Schema(
     email:    { type: String, required: true, unique: true, trim: true, lowercase: true },
     password: { type: String, required: true, minlength: 6 },
     avatar:   { type: String, default: '' },
+    // Consent record — stored at registration time
+    consentGiven:   { type: Boolean, default: false },
+    consentVersion: { type: String,  default: '' },
+    consentAt:      { type: Date,    default: undefined },
+    // Password reset tokens
+    resetPasswordToken:   { type: String, default: undefined },
+    resetPasswordExpires: { type: Date, default: undefined },
   },
   { timestamps: true }
 );

@@ -1,0 +1,17 @@
+- main [ref=f3e3]:
+  - generic [ref=f3e21]:
+    - generic [ref=f3e22]: TL&E
+    - heading "Reset Password" [level=1] [ref=f3e24]
+    - paragraph [ref=f3e25]: Enter your registered email address to receive password reset instructions.
+    - generic [ref=f3e26]:
+      - generic [ref=f3e27]:
+        - generic: ✉️
+        - generic [ref=f3e28]: Email Address
+        - textbox "Email Address" [ref=f3e29]:
+          - /placeholder: Your registered email address
+      - button "SEND RESET LINK 📨" [ref=f3e30] [cursor=pointer]
+      - paragraph [ref=f3e31]:
+        - link "← Back to Sign In" [ref=f3e32] [cursor=pointer]:
+          - /url: /login
+        - link "Create Account" [ref=f3e33] [cursor=pointer]:
+          - /url: /signup

@@ -5,6 +5,8 @@ import Navbar from './components/Navbar';
 import TeachDevtaDrawer from './components/TeachDevtaDrawer';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Home from './pages/Home';
 import Learn from './pages/Learn';
 import Teach from './pages/Teach';
@@ -50,6 +52,8 @@ function AppRoutes() {
           {/* Auth routes */}
           <Route path="/login" element={<PublicOnlyRoute><Login /></PublicOnlyRoute>} />
           <Route path="/signup" element={<PublicOnlyRoute><Signup /></PublicOnlyRoute>} />
+          <Route path="/forgot-password" element={<PublicOnlyRoute><ForgotPassword /></PublicOnlyRoute>} />
+          <Route path="/reset-password/:token" element={<PublicOnlyRoute><ResetPassword /></PublicOnlyRoute>} />
 
           {/* Protected workspace routes */}
           <Route path="/learn" element={<ProtectedRoute><Learn onOpenAI={openAIWithQuery} /></ProtectedRoute>} />

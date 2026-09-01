@@ -1,0 +1,41 @@
+- main [ref=f8e17]:
+  - generic [ref=f8e85]:
+    - generic [ref=f8e86]: TL&E
+    - heading "Create Account" [level=1] [ref=f8e88]
+    - paragraph [ref=f8e89]: Join the peer-to-peer skill exchange platform
+    - generic [ref=f8e90]:
+      - generic [ref=f8e91]:
+        - generic: 👤
+        - generic [ref=f8e92]: Full name
+        - textbox "Full name" [ref=f8e93]:
+          - /placeholder: Full Name
+      - generic [ref=f8e94]:
+        - generic: 🆔
+        - generic [ref=f8e95]: Username
+        - textbox "Username" [ref=f8e96]
+      - generic [ref=f8e97]:
+        - generic: ✉️
+        - generic [ref=f8e98]: Email address
+        - textbox "Email address" [ref=f8e99]:
+          - /placeholder: Email Address
+      - generic [ref=f8e100]:
+        - generic: 🔒
+        - generic [ref=f8e101]: Password
+        - textbox "Password" [ref=f8e102]
+      - generic [ref=f8e103]:
+        - generic: 🛡️
+        - generic [ref=f8e104]: Confirm password
+        - textbox "Confirm password" [ref=f8e105]:
+          - /placeholder: Confirm Password
+      - generic [ref=f8e107] [cursor=pointer]:
+        - checkbox "I accept the Terms of Service & Privacy Policy" [checked] [ref=f8e108]
+        - generic [ref=f8e109]:
+          - text: I accept the
+          - link "Terms of Service" [ref=f8e110]:
+            - /url: "#"
+          - text: "& Privacy Policy"
+      - button "START LEARNING & TEACHING 🚀" [ref=f8e111] [cursor=pointer]
+      - paragraph [ref=f8e112]:
+        - text: Already have an account?
+        - link "Sign In" [ref=f8e113] [cursor=pointer]:
+          - /url: /login

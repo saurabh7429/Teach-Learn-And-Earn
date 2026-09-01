@@ -92,16 +92,9 @@ export default function Login() {
               <span className="neo-toggle-label">Remember me</span>
             </label>
 
-            <a
-              href="#"
-              className="neo-forgot-link"
-              onClick={(e) => {
-                e.preventDefault();
-                alert('Password reset link sent to your registered email!');
-              }}
-            >
+            <Link to="/forgot-password" className="neo-forgot-link">
               Forgot password?
-            </a>
+            </Link>
           </div>
 
           {error && <div id={errorId} className="neo-error-badge" role="alert" aria-live="assertive">{error}</div>}

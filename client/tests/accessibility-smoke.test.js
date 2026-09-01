@@ -33,11 +33,20 @@ test('Shared modal has dialog semantics and keyboard handling', () => {
 test('Core auth forms expose labels and alert semantics', () => {
   const login = read('src/pages/Login.jsx');
   const signup = read('src/pages/Signup.jsx');
+  const forgot = read('src/pages/ForgotPassword.jsx');
+  const reset = read('src/pages/ResetPassword.jsx');
 
   assert.match(login, /<label htmlFor="login-email" className="sr-only">/);
   assert.match(login, /role="alert"/);
   assert.match(signup, /<label htmlFor="signup-name" className="sr-only">/);
   assert.match(signup, /role="alert"/);
+  assert.match(forgot, /<label htmlFor="forgot-email" className="sr-only">/);
+  assert.match(forgot, /role="alert"/);
+  assert.match(forgot, /role="status"/);
+  assert.match(reset, /<label htmlFor="reset-password" className="sr-only">/);
+  assert.match(reset, /<label htmlFor="reset-confirm" className="sr-only">/);
+  assert.match(reset, /role="alert"/);
+  assert.match(reset, /role="status"/);
 });
 
 test('Learn, Teach, Chat and AI drawer inputs have accessible names and live regions', () => {

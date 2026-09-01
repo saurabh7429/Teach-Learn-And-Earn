@@ -1,0 +1,94 @@
+- generic [ref=f3e2]:
+  - navigation [ref=f3e3]:
+    - generic [ref=f3e4]:
+      - link "Go to home page" [ref=f3e5] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f3e6]: TL&E
+      - generic [ref=f3e7]:
+        - link "Home" [ref=f3e8] [cursor=pointer]:
+          - /url: /
+        - link "Learn" [ref=f3e9] [cursor=pointer]:
+          - /url: /learn
+        - link "Teach" [ref=f3e10] [cursor=pointer]:
+          - /url: /teach
+      - generic [ref=f3e11]:
+        - button "Open Teach Devta AI" [active] [ref=f3e12] [cursor=pointer]: 🤖
+        - button "Toggle Theme" [ref=f3e13] [cursor=pointer]: ☀️
+        - generic [ref=f3e14]:
+          - button "Login" [ref=f3e15] [cursor=pointer]
+          - button "Sign Up" [ref=f3e16] [cursor=pointer]
+  - generic [ref=f3e61]:
+    - generic [ref=f3e62]:
+      - generic [ref=f3e63]:
+        - generic [ref=f3e64]: 🤖
+        - generic [ref=f3e65]:
+          - heading "Teach Devta" [level=3] [ref=f3e66]
+          - text: Your AI Learning Assistant • Always Here to Help
+      - button "Close Drawer" [ref=f3e67] [cursor=pointer]: ✕
+    - generic [ref=f3e68]:
+      - button "Explain React useEffect lifecycle" [ref=f3e69] [cursor=pointer]
+      - button "Props vs State in React with code" [ref=f3e70] [cursor=pointer]
+      - button "How do I pass teacher skill verification?" [ref=f3e71] [cursor=pointer]
+      - button "Best practices for peer learning" [ref=f3e72] [cursor=pointer]
+    - log [ref=f3e73]:
+      - generic [ref=f3e74]:
+        - generic [ref=f3e75]: 🤖
+        - generic [ref=f3e76]:
+          - generic [ref=f3e77]:
+            - generic [ref=f3e78]: 🤖 Teach Devta
+            - button "📋 Copy Text" [ref=f3e79] [cursor=pointer]
+          - paragraph [ref=f3e82]:
+            - text: Namaste! 🙏 I am
+            - strong [ref=f3e83]: Teach Devta
+            - text: — your personal learning assistant. How can I help your learning or teaching journey today?
+          - generic [ref=f3e84]: 10:01 PM
+    - generic [ref=f3e85]:
+      - textbox "Ask Teach Devta a question" [ref=f3e86]:
+        - /placeholder: Ask Teach Devta anything…
+      - button "Send question to Teach Devta" [disabled] [ref=f3e87] [cursor=pointer]: ⚡ Send
+  - main [ref=f3e17]:
+    - generic [ref=f3e19]:
+      - generic [ref=f3e20]:
+        - generic [ref=f3e21]: 🚀 Peer-to-Peer Skill Exchange + Groq AI Assessment
+        - heading "Teach, Learn & Earn" [level=1] [ref=f3e22]
+        - paragraph [ref=f3e23]:
+          - text: Learn what you love. Teach what you know.One account lets you discover expert teachers and verify your own teaching skills with
+          - strong [ref=f3e24]: Teach Devta AI
+          - text: .
+        - generic [ref=f3e25]:
+          - button "Get Started Free 🚀" [ref=f3e26] [cursor=pointer]
+          - button "Sign In to Workspace 👋" [ref=f3e27] [cursor=pointer]
+        - generic [ref=f3e29]:
+          - button "⚛️ React 19 & Next.js" [ref=f3e30] [cursor=pointer]
+          - button "🐍 Python & FastMCP" [ref=f3e31] [cursor=pointer]
+          - button "⚡ Groq & LLM Tuning" [ref=f3e32] [cursor=pointer]
+          - button "🎨 3D CSS & UI Design" [ref=f3e33] [cursor=pointer]
+          - button "🦀 Rust & WebAssembly" [ref=f3e34] [cursor=pointer]
+          - button "📱 Mobile React Native" [ref=f3e35] [cursor=pointer]
+          - button "☁️ Cloud & Docker" [ref=f3e36] [cursor=pointer]
+      - generic [ref=f3e37]:
+        - generic [ref=f3e38]:
+          - heading "Choose Your Pathway" [level=2] [ref=f3e39]
+          - paragraph [ref=f3e40]: Exchange knowledge directly with peers without monetary barriers.
+        - generic [ref=f3e41]:
+          - generic [ref=f3e42] [cursor=pointer]:
+            - generic [ref=f3e43]:
+              - text: 📚
+              - heading "LEARN" [level=2] [ref=f3e44]
+              - paragraph [ref=f3e45]: Connect with peer experts for 1-on-1 sessions. Ask specific questions and receive structured teaching guidance.
+            - button "Explore Learning →" [ref=f3e46]
+          - generic [ref=f3e47] [cursor=pointer]:
+            - generic [ref=f3e48]:
+              - text: 🎓
+              - heading "TEACH" [level=2] [ref=f3e49]
+              - paragraph [ref=f3e50]: Share your mastery. Pass the Teach Devta dynamic assessment to earn a verified teacher badge and match with eager learners.
+            - button "Start Teaching →" [ref=f3e51]
+      - generic [ref=f3e53]:
+        - generic [ref=f3e54]: 🤖
+        - generic [ref=f3e55]:
+          - generic [ref=f3e56]: Teach Devta AI Engine
+          - generic [ref=f3e57]:
+            - text: Powered by
+            - strong [ref=f3e58]: Groq Llama 3.3
+            - text: — acts as your instant 24/7 learning tutor and verifies teacher qualification quizzes in real time!
+        - button "⚡ Ask Teach Devta" [ref=f3e59] [cursor=pointer]

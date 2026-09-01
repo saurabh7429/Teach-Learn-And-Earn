@@ -1,0 +1,21 @@
+- generic [active] [ref=f9e1]:
+  - generic:
+    - navigation [ref=f9e2]:
+      - generic [ref=f9e3]:
+        - link "Go to home page" [ref=f9e4] [cursor=pointer]:
+          - /url: /
+          - generic [ref=f9e5]: TL&E
+        - generic [ref=f9e6]:
+          - link "Home" [ref=f9e7] [cursor=pointer]:
+            - /url: /
+          - link "Learn" [ref=f9e8] [cursor=pointer]:
+            - /url: /learn
+          - link "Teach" [ref=f9e9] [cursor=pointer]:
+            - /url: /teach
+        - generic [ref=f9e10]:
+          - button "Open Teach Devta AI" [ref=f9e11] [cursor=pointer]: 🤖
+          - button "Toggle Theme" [ref=f9e12] [cursor=pointer]: ☀️
+          - generic [ref=f9e13]:
+            - button "Login" [ref=f9e14] [cursor=pointer]
+            - button "Sign Up" [ref=f9e15] [cursor=pointer]
+    - main
