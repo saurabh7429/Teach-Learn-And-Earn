@@ -9,6 +9,8 @@ export default function Teach({ onOpenAI }) {
   const { user } = useAuth();
   const [mySkills, setMySkills]             = useState([]);
   const [myChats, setMyChats]               = useState([]);
+  const [pageLoading, setPageLoading]       = useState(true);
+  const [loadError, setLoadError]           = useState(null);
   const [showModal, setShowModal]           = useState(false);
   const [showAssessment, setShowAssessment] = useState(false);
   const [selectedSkillForEval, setSelectedSkillForEval] = useState(null);
@@ -33,9 +35,28 @@ export default function Teach({ onOpenAI }) {
   const [loading, setLoading] = useState(false);
   const [toast, setToast]   = useState('');
 
+  const fetchData = async () => {
+    setPageLoading(true);
+    setLoadError(null);
+    try {
+      const [skillsRes, chatsRes] = await Promise.all([
+        getMySkills(),
+        getChats(),
+      ]);
+      setMySkills(skillsRes.data || []);
+      setMyChats(chatsRes.data || []);
+    } catch (err) {
+      setLoadError(
+        err.response?.data?.message ||
+        'Unable to connect to the teaching service. Please check your network and try again.'
+      );
+    } finally {
+      setPageLoading(false);
+    }
+  };
+
   useEffect(() => {
-    getMySkills().then((r) => setMySkills(r.data)).catch(() => setMySkills([]));
-    getChats().then((r) => setMyChats(r.data)).catch(() => setMyChats([]));
+    fetchData();
   }, []);
 
   const showToast = (msg) => {
@@ -213,128 +234,151 @@ export default function Teach({ onOpenAI }) {
           </div>
         </div>
 
-        {/* ── Active Students & 1-on-1 Sessions ── */}
-        <div className="dashboard-section">
-          <div className="section-header">
-            <h2 className="section-title">My Active Students &amp; Sessions</h2>
-            <span className="badge badge-verified">{activeTeachingSessions.length} Active</span>
-          </div>
-
-          {activeTeachingSessions.length === 0 ? (
-            <div className="card" style={{ padding: 32, textAlign: 'center', color: 'var(--text-muted)' }}>
-              <p style={{ marginBottom: 12, fontSize: '0.98rem' }}>No active students assigned to you yet.</p>
-              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
-                Browse the Requests feed and offer to teach students to start 1-on-1 sessions.
-              </p>
-              <button className="btn btn-secondary btn-sm" style={{ marginTop: 14 }} onClick={() => navigate('/requests')}>
-                Browse Student Requests →
-              </button>
-            </div>
-          ) : (
-            <div className="grid-auto">
-              {activeTeachingSessions.map((chatItem) => {
-                const studentUser = chatItem.participants?.find((p) => p._id !== user?._id);
-                const isCompleted = chatItem.status === 'completed';
-                return (
-                  <div className="card card-3d" key={chatItem._id}>
-                    <div className="card-body">
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                        <span className={`badge ${isCompleted ? 'badge-purple' : 'badge-verified'}`}>
-                          {isCompleted ? '✓ Completed' : '🎓 Active Student'}
-                        </span>
-                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                          {new Date(chatItem.updatedAt || chatItem.createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-primary)' }}>
-                        {chatItem.skill || 'Peer Learning Session'}
-                      </h3>
-                      <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: 16 }}>
-                        Student: <strong>{studentUser?.name || 'Enrolled Student'}</strong> (@{studentUser?.username || 'student'})
-                      </p>
-                      <button
-                        className="btn btn-primary btn-sm"
-                        style={{ width: '100%' }}
-                        onClick={() => navigate(`/chat/${chatItem._id}`)}
-                      >
-                        💬 Open Chat with {studentUser?.name?.split(' ')[0] || 'Student'}
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* ── My Teaching Skills Grid ── */}
-        <div className="dashboard-section">
-          <div className="section-header">
-            <h2 className="section-title">My Teaching Skills</h2>
-            <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}>
-              ＋ Add New Skill
+        {/* API Error State Banner with Retry */}
+        {loadError && (
+          <div className="api-state-card api-error-card" role="alert" aria-live="assertive">
+            <div className="api-error-icon">⚠️</div>
+            <h2 className="api-error-title">Unable to Load Teaching Data</h2>
+            <p className="api-error-desc">{loadError}</p>
+            <button type="button" className="btn btn-primary btn-sm" onClick={fetchData}>
+              🔄 Retry Connection
             </button>
           </div>
+        )}
 
-          {mySkills.length === 0 ? (
-            <div className="card" style={{ padding: 48, textAlign: 'center', color: 'var(--text-muted)' }}>
-              <div style={{ fontSize: '3rem', marginBottom: 12 }}>🎓</div>
-              <p style={{ marginBottom: 18, fontSize: '1.05rem', color: 'var(--text-primary)' }}>
-                You haven&apos;t added any teaching skills yet.
-              </p>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.92rem', marginBottom: 20 }}>
-                Add subjects you are proficient in and complete a quick 3-question assessment to get verified.
-              </p>
-              <button className="btn btn-primary btn-md" onClick={() => setShowModal(true)}>
-                + Add Your First Skill
-              </button>
-            </div>
-          ) : (
-            <div className="grid-auto">
-              {mySkills.map((skill) => (
-                <div className="card card-3d" key={skill._id} style={{ cursor: 'pointer' }} onClick={() => handleViewStudents(skill)}>
-                  <div className="card-body">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
-                      <span className={`badge ${skill.verified ? 'badge-verified' : 'badge-pending'}`}>
-                        {skill.verified ? '✓ Verified Teacher' : '⏳ Pending Assessment'}
-                      </span>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleDelete(skill._id); }}
-                        style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '1.1rem' }}
-                        title="Remove skill"
-                      >
-                        ✕
-                      </button>
-                    </div>
+        {/* Loading Indicator */}
+        {pageLoading && (
+          <div className="card api-loading-card" role="status" aria-live="polite">
+            <div className="spinner" />
+            <span className="api-loading-text">Loading your teaching skills and active students…</span>
+          </div>
+        )}
 
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>
-                      {skill.name}
-                    </h3>
-                    <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 20, minHeight: 42 }}>
-                      {skill.description || 'No specific description provided.'}
-                    </p>
+        {!pageLoading && !loadError && (
+          <>
+            {/* ── Active Students & 1-on-1 Sessions ── */}
+            <div className="dashboard-section">
+              <div className="section-header">
+                <h2 className="section-title">My Active Students &amp; Sessions</h2>
+                <span className="badge badge-verified">{activeTeachingSessions.length} Active</span>
+              </div>
 
-                    <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-                        <span style={{ fontSize: '0.85rem', color: 'var(--accent-indigo)', fontWeight: 700 }}>
-                          👥 View Students →
-                        </span>
-                        {!skill.verified && (
+              {activeTeachingSessions.length === 0 ? (
+                <div className="card empty-state-card">
+                  <div className="empty-state-icon">👥</div>
+                  <div className="empty-state-title">No active students assigned yet</div>
+                  <p className="empty-state-desc">
+                    Browse the requests feed and offer to teach students to start 1-on-1 learning sessions.
+                  </p>
+                  <button className="btn btn-secondary btn-sm" onClick={() => navigate('/requests')}>
+                    Browse Student Requests →
+                  </button>
+                </div>
+              ) : (
+                <div className="grid-auto">
+                  {activeTeachingSessions.map((chatItem) => {
+                    const studentUser = chatItem.participants?.find((p) => p._id !== user?._id);
+                    const isCompleted = chatItem.status === 'completed';
+                    return (
+                      <div className="card card-3d" key={chatItem._id}>
+                        <div className="card-body">
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                            <span className={`badge ${isCompleted ? 'badge-purple' : 'badge-verified'}`}>
+                              {isCompleted ? '✓ Completed' : '🎓 Active Student'}
+                            </span>
+                            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                              {new Date(chatItem.updatedAt || chatItem.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: 6, color: 'var(--text-primary)' }}>
+                            {chatItem.skill || 'Peer Learning Session'}
+                          </h3>
+                          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: 16 }}>
+                            Student: <strong>{studentUser?.name || 'Enrolled Student'}</strong> (@{studentUser?.username || 'student'})
+                          </p>
                           <button
-                            className="btn btn-gradient btn-xs"
-                            onClick={(e) => { e.stopPropagation(); startAssessmentForSkill(skill); }}
+                            className="btn btn-primary btn-sm"
+                            style={{ width: '100%' }}
+                            onClick={() => navigate(`/chat/${chatItem._id}`)}
                           >
-                            ⚡ Take Quiz
+                            💬 Open Chat with {studentUser?.name?.split(' ')[0] || 'Student'}
                           </button>
-                        )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* ── My Teaching Skills Grid ── */}
+            <div className="dashboard-section">
+              <div className="section-header">
+                <h2 className="section-title">My Teaching Skills</h2>
+                <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}>
+                  ＋ Add New Skill
+                </button>
+              </div>
+
+              {mySkills.length === 0 ? (
+                <div className="card empty-state-card">
+                  <div className="empty-state-icon">🎓</div>
+                  <div className="empty-state-title">You haven&apos;t added any teaching skills yet</div>
+                  <p className="empty-state-desc">
+                    Add subjects you are proficient in and complete a quick 3-question assessment to get verified.
+                  </p>
+                  <button className="btn btn-primary btn-md" onClick={() => setShowModal(true)}>
+                    + Add Your First Skill
+                  </button>
+                </div>
+              ) : (
+                <div className="grid-auto">
+                  {mySkills.map((skill) => (
+                    <div className="card card-3d" key={skill._id} style={{ cursor: 'pointer' }} onClick={() => handleViewStudents(skill)}>
+                      <div className="card-body">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
+                          <span className={`badge ${skill.verified ? 'badge-verified' : 'badge-pending'}`}>
+                            {skill.verified ? '✓ Verified Teacher' : '⏳ Pending Assessment'}
+                          </span>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleDelete(skill._id); }}
+                            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '1.1rem' }}
+                            title="Remove skill"
+                          >
+                            ✕
+                          </button>
+                        </div>
+
+                        <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>
+                          {skill.name}
+                        </h3>
+                        <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: 20, minHeight: 42 }}>
+                          {skill.description || 'No specific description provided.'}
+                        </p>
+
+                        <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+                            <span style={{ fontSize: '0.85rem', color: 'var(--accent-indigo)', fontWeight: 700 }}>
+                              👥 View Students →
+                            </span>
+                            {!skill.verified && (
+                              <button
+                                className="btn btn-gradient btn-xs"
+                                onClick={(e) => { e.stopPropagation(); startAssessmentForSkill(skill); }}
+                              >
+                                ⚡ Take Quiz
+                              </button>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
-          )}
-        </div>
+          </>
+        )}
 
         {/* ── Modal: Add New Skill ── */}
         <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Add Teaching Skill 🎓">

@@ -1,0 +1,54 @@
+- main [ref=f11e3]:
+  - generic [ref=f11e4]:
+    - navigation "Authentication navigation" [ref=f11e5]:
+      - link "Back to home page" [ref=f11e6] [cursor=pointer]:
+        - /url: /
+        - generic [aria-hidden] [ref=f11e7]: TL&E
+        - generic [ref=f11e8]: Back to Home
+    - generic [ref=f11e9]:
+      - generic [ref=f11e10]: TL&E
+      - heading "Create Account" [level=1] [ref=f11e12]
+      - paragraph [ref=f11e13]: Join the peer-to-peer skill exchange platform
+      - generic [ref=f11e14]:
+        - generic [ref=f11e15]:
+          - generic: 👤
+          - generic [ref=f11e16]: Full name
+          - textbox "Full name" [ref=f11e17]:
+            - /placeholder: Full Name
+            - text: QA Tester
+        - generic [ref=f11e18]:
+          - generic: 🆔
+          - generic [ref=f11e19]: Username
+          - textbox "Username" [ref=f11e20]: qa_phase3c_user
+        - generic [ref=f11e21]:
+          - generic: ✉️
+          - generic [ref=f11e22]: Email address
+          - textbox "Email address" [ref=f11e23]:
+            - /placeholder: Email Address
+            - text: qa.phase3c@example.test
+        - generic [ref=f11e24]:
+          - generic: 🔒
+          - generic [ref=f11e25]: Password
+          - textbox "Password" [ref=f11e26]: SecurePass123!
+        - generic [ref=f11e27]:
+          - generic: 🛡️
+          - generic [ref=f11e28]: Confirm password
+          - textbox "Confirm password" [ref=f11e29]:
+            - /placeholder: Confirm Password
+            - text: SecurePass123!
+        - generic [ref=f11e31] [cursor=pointer]:
+          - checkbox "I accept the Terms of Service (opens in a new tab) & Privacy Policy (opens in a new tab)" [checked] [active] [ref=f11e32]
+          - generic [ref=f11e33]:
+            - text: I accept the
+            - link "Terms of Service (opens in a new tab)" [ref=f11e34]:
+              - /url: /terms
+              - text: Terms of Service
+            - text: "&"
+            - link "Privacy Policy (opens in a new tab)" [ref=f11e35]:
+              - /url: /privacy
+              - text: Privacy Policy
+        - button "START LEARNING & TEACHING 🚀" [ref=f11e36] [cursor=pointer]
+        - paragraph [ref=f11e37]:
+          - text: Already have an account?
+          - link "Sign In" [ref=f11e38] [cursor=pointer]:
+            - /url: /login

@@ -8,12 +8,26 @@ export default function Profile() {
   const { user, logoutUser } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
+
+  const fetchProfile = async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const res = await getProgress();
+      setData(res.data);
+    } catch (err) {
+      setLoadError(
+        err.response?.data?.message ||
+        'Unable to load your profile statistics and activity. Please check your network and try again.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    getProgress()
-      .then((r) => setData(r.data))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    fetchProfile();
   }, []);
 
   const handleLogout = () => {
@@ -68,12 +82,21 @@ export default function Profile() {
             </div>
             <div className="profile-hero-actions">
               <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={() => navigate('/settings')}
+              >
+                ⚙️ Settings
+              </button>
+              <button
+                type="button"
                 className="btn btn-secondary btn-sm"
                 onClick={() => navigate('/teach')}
               >
                 🎓 Manage Skills
               </button>
               <button
+                type="button"
                 className="btn btn-danger btn-sm"
                 onClick={handleLogout}
               >
@@ -83,135 +106,147 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* ── Stats Grid ── */}
-        <div className="stats-grid" style={{ marginBottom: 36 }}>
-          {stats.map((s) => (
-            <div className="card stat-card card-3d" key={s.label}>
-              <div style={{ fontSize: '2rem', marginBottom: 6 }}>{s.icon}</div>
-              <div className="stat-number" style={{ color: s.color }}>{s.num}</div>
-              <div className="stat-label">{s.label}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* ── Learning Journey ── */}
-        <div className="dashboard-section">
-          <div className="section-header">
-            <h2 className="section-title">📚 Learning Journey</h2>
-            <button className="btn btn-primary btn-sm" onClick={() => navigate('/learn')}>
-              + New Request
+        {/* API Error State Banner with Retry */}
+        {loadError && (
+          <div className="api-state-card api-error-card" role="alert" aria-live="assertive">
+            <div className="api-error-icon">⚠️</div>
+            <h2 className="api-error-title">Unable to Load Profile Data</h2>
+            <p className="api-error-desc">{loadError}</p>
+            <button type="button" className="btn btn-primary btn-sm" onClick={fetchProfile}>
+              🔄 Retry Connection
             </button>
           </div>
+        )}
 
-          {loading ? (
-            <div className="card" style={{ padding: 36, display: 'flex', justifyContent: 'center' }}>
-              <div className="spinner" />
-            </div>
-          ) : learning.activeRequests.length === 0 ? (
-            <div className="card profile-empty-state">
-              <div style={{ fontSize: '2rem', marginBottom: 12 }}>🎯</div>
-              <p style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>
-                No active learning sessions
-              </p>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: 16 }}>
-                Connect with an expert to start learning!
-              </p>
-              <button className="btn btn-primary btn-sm" onClick={() => navigate('/learn')}>
-                Find a Teacher →
-              </button>
-            </div>
-          ) : (
-            <div className="grid-auto">
-              {learning.activeRequests.map((req) => (
-                <div className="card card-3d" key={req._id}>
-                  <div className="card-body">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-                      <span className="badge badge-verified">In Progress</span>
-                      <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                        {req.skill || 'Skill'}
-                      </span>
-                    </div>
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>
-                      {req.question}
-                    </h3>
-                    <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', marginBottom: 14 }}>
-                      Teacher: <strong>{req.selectedTeacher?.name ?? 'Assigned Mentor'}</strong>
-                    </p>
-                    <div className="progress-bar-wrapper">
-                      <div className="progress-bar-label">
-                        <span>Curriculum Mastery</span>
-                        <span>70%</span>
-                      </div>
-                      <div className="progress-bar-track">
-                        <div className="progress-bar-fill" style={{ width: '70%' }} />
-                      </div>
-                    </div>
-                  </div>
+        {/* Loading Indicator */}
+        {loading && (
+          <div className="card api-loading-card" role="status" aria-live="polite">
+            <div className="spinner" />
+            <span className="api-loading-text">Loading profile activity and learning progress…</span>
+          </div>
+        )}
+
+        {!loading && !loadError && (
+          <>
+            {/* ── Stats Grid ── */}
+            <div className="stats-grid" style={{ marginBottom: 36 }}>
+              {stats.map((s) => (
+                <div className="card stat-card card-3d" key={s.label}>
+                  <div style={{ fontSize: '2rem', marginBottom: 6 }}>{s.icon}</div>
+                  <div className="stat-number" style={{ color: s.color }}>{s.num}</div>
+                  <div className="stat-label">{s.label}</div>
                 </div>
               ))}
             </div>
-          )}
-        </div>
 
-        {/* ── Teaching Portfolio ── */}
-        <div className="dashboard-section">
-          <div className="section-header">
-            <h2 className="section-title">🎓 Teaching Portfolio</h2>
-            <button className="btn btn-secondary btn-sm" onClick={() => navigate('/teach')}>
-              Manage Skills →
-            </button>
-          </div>
+            {/* ── Learning Journey ── */}
+            <div className="dashboard-section">
+              <div className="section-header">
+                <h2 className="section-title">📚 Learning Journey</h2>
+                <button className="btn btn-primary btn-sm" onClick={() => navigate('/learn')}>
+                  + New Request
+                </button>
+              </div>
 
-          {loading ? (
-            <div className="card" style={{ padding: 36, display: 'flex', justifyContent: 'center' }}>
-              <div className="spinner" />
-            </div>
-          ) : teaching.skills.length === 0 ? (
-            <div className="card profile-empty-state">
-              <div style={{ fontSize: '2rem', marginBottom: 12 }}>✨</div>
-              <p style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: 6 }}>
-                No skills listed yet
-              </p>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: 16 }}>
-                Share your knowledge and get Teach Devta certified!
-              </p>
-              <button className="btn btn-secondary btn-sm" onClick={() => navigate('/teach')}>
-                Add Your Skills →
-              </button>
-            </div>
-          ) : (
-            <div className="grid-auto">
-              {teaching.skills.map((skill) => (
-                <div className="card card-3d" key={skill._id}>
-                  <div className="card-body">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                      <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-                        {skill.name}
-                      </h3>
-                      <span className={`badge ${skill.verified ? 'badge-verified' : 'badge-pending'}`}>
-                        {skill.verified ? '✓ Verified' : '⏳ Pending'}
-                      </span>
-                    </div>
-                    <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: 16 }}>
-                      {skill.description || 'No description provided.'}
-                    </p>
-                    <div style={{
-                      display: 'flex', alignItems: 'center', gap: 8,
-                      fontSize: '0.82rem', color: skill.verified ? 'var(--success)' : 'var(--text-muted)',
-                      padding: '8px 12px', background: 'var(--surface-inset)',
-                      borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)',
-                    }}>
-                      {skill.verified ? '🏆' : '⏳'}
-                      <span>
-                        {skill.verified ? 'Teach Devta Certified' : 'Pending AI Assessment'}
-                      </span>
-                    </div>
-                  </div>
+              {learning.activeRequests.length === 0 ? (
+                <div className="card empty-state-card">
+                  <div className="empty-state-icon">🎯</div>
+                  <div className="empty-state-title">No active learning sessions</div>
+                  <p className="empty-state-desc">
+                    Connect with an expert to start learning!
+                  </p>
+                  <button className="btn btn-primary btn-sm" onClick={() => navigate('/learn')}>
+                    Find a Teacher →
+                  </button>
                 </div>
-              ))}
+              ) : (
+                <div className="grid-auto">
+                  {learning.activeRequests.map((req) => (
+                    <div className="card card-3d" key={req._id}>
+                      <div className="card-body">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+                          <span className="badge badge-verified">In Progress</span>
+                          <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                            {req.skill || 'Skill'}
+                          </span>
+                        </div>
+                        <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>
+                          {req.question}
+                        </h3>
+                        <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', marginBottom: 14 }}>
+                          Teacher: <strong>{req.selectedTeacher?.name ?? 'Assigned Mentor'}</strong>
+                        </p>
+                        <div className="progress-bar-wrapper">
+                          <div className="progress-bar-label">
+                            <span>Curriculum Mastery</span>
+                            <span>70%</span>
+                          </div>
+                          <div className="progress-bar-track">
+                            <div className="progress-bar-fill" style={{ width: '70%' }} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
+
+            {/* ── Teaching Portfolio ── */}
+            <div className="dashboard-section">
+              <div className="section-header">
+                <h2 className="section-title">🎓 Teaching Portfolio</h2>
+                <button className="btn btn-secondary btn-sm" onClick={() => navigate('/teach')}>
+                  Manage Skills →
+                </button>
+              </div>
+
+              {teaching.skills.length === 0 ? (
+                <div className="card empty-state-card">
+                  <div className="empty-state-icon">✨</div>
+                  <div className="empty-state-title">No skills listed yet</div>
+                  <p className="empty-state-desc">
+                    Share your knowledge and get Teach Devta certified!
+                  </p>
+                  <button className="btn btn-secondary btn-sm" onClick={() => navigate('/teach')}>
+                    Add Your Skills →
+                  </button>
+                </div>
+              ) : (
+                <div className="grid-auto">
+                  {teaching.skills.map((skill) => (
+                    <div className="card card-3d" key={skill._id}>
+                      <div className="card-body">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                          <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                            {skill.name}
+                          </h3>
+                          <span className={`badge ${skill.verified ? 'badge-verified' : 'badge-pending'}`}>
+                            {skill.verified ? '✓ Verified' : '⏳ Pending'}
+                          </span>
+                        </div>
+                        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: 16 }}>
+                          {skill.description || 'No description provided.'}
+                        </p>
+                        <div style={{
+                          display: 'flex', alignItems: 'center', gap: 8,
+                          fontSize: '0.82rem', color: skill.verified ? 'var(--success)' : 'var(--text-muted)',
+                          padding: '8px 12px', background: 'var(--surface-inset)',
+                          borderRadius: 'var(--radius-sm)', border: '1px solid var(--border)',
+                        }}>
+                          {skill.verified ? '🏆' : '⏳'}
+                          <span>
+                            {skill.verified ? 'Teach Devta Certified' : 'Pending AI Assessment'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </>
+        )}
 
         {/* ── Quick Links ── */}
         <div className="dashboard-section">
@@ -225,6 +260,9 @@ export default function Profile() {
             </button>
             <button className="btn btn-secondary" onClick={() => navigate('/requests')}>
               📋 My Requests
+            </button>
+            <button className="btn btn-secondary" onClick={() => navigate('/settings')}>
+              ⚙️ Settings
             </button>
             <button
               className="btn btn-danger"

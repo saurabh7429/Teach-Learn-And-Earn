@@ -127,3 +127,54 @@ test('AuthTopBar is accessible and present on all standalone auth pages', () => 
   assert.match(reset, /AuthTopBar/);
 });
 
+test('Settings page exists and provides accessible preferences', () => {
+  const settings = read('src/pages/Settings.jsx');
+  const app = read('src/App.jsx');
+
+  // Settings page has proper heading structure and accessible theme buttons
+  assert.match(settings, /<h1>Settings/);
+  assert.match(settings, /<h2[^>]*>Appearance &amp; Theme<\/h2>/);
+  assert.match(settings, /aria-label="Theme selection"/);
+  assert.match(settings, /aria-pressed=/);
+  assert.match(settings, /to="\/forgot-password"/);
+
+  // App registers /settings route
+  assert.match(app, /path="\/settings"/);
+});
+
+test('API error and retry affordances exist across workspace pages', () => {
+  const learn = read('src/pages/Learn.jsx');
+  const teach = read('src/pages/Teach.jsx');
+  const requests = read('src/pages/Requests.jsx');
+  const progress = read('src/pages/Progress.jsx');
+  const profile = read('src/pages/Profile.jsx');
+  const chat = read('src/pages/Chat.jsx');
+
+  // All pages include explicit error states and retry buttons
+  assert.match(learn, /role="alert"/);
+  assert.match(learn, /Retry Connection|Try Again/);
+  assert.match(teach, /role="alert"/);
+  assert.match(teach, /Retry Connection|Try Again/);
+  assert.match(requests, /role="alert"/);
+  assert.match(requests, /Retry Connection|Try Again/);
+  assert.match(progress, /role="alert"/);
+  assert.match(progress, /Retry Connection|Try Again/);
+  assert.match(profile, /role="alert"/);
+  assert.match(profile, /Retry Connection|Try Again/);
+  assert.match(chat, /role="alert"/);
+  assert.match(chat, /Retry Connection|Try Again/);
+});
+
+test('Navbar notification badge is dynamic and accessible', () => {
+  const navbar = read('src/components/Navbar.jsx');
+
+  // Not hardcoded 3
+  assert.doesNotMatch(navbar, /<span className="notif-badge">3<\/span>/);
+  // Uses unreadNotifCount state
+  assert.match(navbar, /unreadNotifCount/);
+  assert.match(navbar, /notif-badge/);
+  // Accessible label
+  assert.match(navbar, /aria-label=/);
+});
+
+

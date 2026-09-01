@@ -1,0 +1,108 @@
+- generic [ref=f13e2]:
+  - navigation [ref=f13e3]:
+    - generic [ref=f13e4]:
+      - link "Go to home page" [ref=f13e5] [cursor=pointer]:
+        - /url: /
+        - generic [ref=f13e6]: TL&E
+        - generic [ref=f13e7]: Teach, Learn & Earn
+      - generic [ref=f13e8]:
+        - link "Home" [ref=f13e9] [cursor=pointer]:
+          - /url: /
+        - link "Learn" [ref=f13e10] [cursor=pointer]:
+          - /url: /learn
+        - link "Teach" [ref=f13e11] [cursor=pointer]:
+          - /url: /teach
+        - link "Progress" [ref=f13e12] [cursor=pointer]:
+          - /url: /progress
+        - link "Requests" [ref=f13e13] [cursor=pointer]:
+          - /url: /requests
+        - link "Settings" [ref=f13e14] [cursor=pointer]:
+          - /url: /settings
+      - generic [ref=f13e15]:
+        - button "Open Teach Devta AI" [ref=f13e16] [cursor=pointer]: 🤖
+        - button "Toggle Theme" [ref=f13e17] [cursor=pointer]: ☀️
+        - button "View notifications" [ref=f13e18] [cursor=pointer]: 🔔
+        - button "Open profile menu" [ref=f13e19] [cursor=pointer]:
+          - generic [ref=f13e20]: QT
+          - generic [ref=f13e21]: QA ▾
+  - main [ref=f13e22]:
+    - generic [ref=f13e24]:
+      - generic [ref=f13e25]:
+        - heading "Settings ⚙️" [level=1] [ref=f13e26]
+        - paragraph [ref=f13e27]: Manage your interface preferences, account details, and security.
+      - generic [ref=f13e28]:
+        - generic [ref=f13e29]:
+          - generic [ref=f13e30]: 🎨
+          - heading "Appearance & Theme" [level=2] [ref=f13e31]
+        - generic [ref=f13e32]:
+          - generic [ref=f13e33]:
+            - generic [ref=f13e34]: Interface Theme
+            - generic [ref=f13e35]: Select your preferred color scheme for TL&E.
+          - group "Theme selection" [ref=f13e36]:
+            - button "🌙 Dark" [ref=f13e37] [cursor=pointer]:
+              - generic [ref=f13e38]: 🌙
+              - text: Dark
+            - button "☀️ Light" [active] [pressed] [ref=f13e39] [cursor=pointer]:
+              - generic [ref=f13e40]: ☀️
+              - text: Light
+      - generic [ref=f13e41]:
+        - generic [ref=f13e42]:
+          - generic [ref=f13e43]: 👤
+          - heading "Account Information" [level=2] [ref=f13e44]
+        - generic [ref=f13e46]:
+          - generic [ref=f13e47]: Full Name
+          - generic [ref=f13e48]: QA Tester
+        - generic [ref=f13e50]:
+          - generic [ref=f13e51]: Username
+          - generic [ref=f13e52]: "@qatest"
+        - generic [ref=f13e54]:
+          - generic [ref=f13e55]: Email Address
+          - generic [ref=f13e56]: qa@test.example
+        - generic [ref=f13e57]:
+          - generic [ref=f13e58]:
+            - generic [ref=f13e59]: Profile Overview
+            - generic [ref=f13e60]: View your learning stats, teaching portfolio, and verified badges.
+          - button "View Profile →" [ref=f13e61] [cursor=pointer]
+      - generic [ref=f13e62]:
+        - generic [ref=f13e63]:
+          - generic [ref=f13e64]: 🔒
+          - heading "Security & Password" [level=2] [ref=f13e65]
+        - generic [ref=f13e66]:
+          - generic [ref=f13e67]:
+            - generic [ref=f13e68]: Password Recovery
+            - generic [ref=f13e69]: Need to change or reset your password? You can request a secure reset link.
+          - link "Reset Password 🔑" [ref=f13e70] [cursor=pointer]:
+            - /url: /forgot-password
+        - generic [ref=f13e71]:
+          - generic [ref=f13e72]:
+            - generic [ref=f13e73]: Authentication Token
+            - generic [ref=f13e74]: Signed in via secure JWT token stored in browser session storage.
+          - generic [ref=f13e75]: Active Session
+      - generic [ref=f13e76]:
+        - generic [ref=f13e77]:
+          - generic [ref=f13e78]: 🔔
+          - heading "Notifications & Alerts" [level=2] [ref=f13e79]
+        - generic [ref=f13e80]:
+          - generic [ref=f13e81]:
+            - generic [ref=f13e82]: In-App Offer Alerts
+            - generic [ref=f13e83]: You receive real-time offer badges in the navbar when teachers apply to your learning requests.
+          - generic [ref=f13e84]: Enabled
+        - generic [ref=f13e85]:
+          - generic [ref=f13e86]:
+            - generic [ref=f13e87]: Email Digest & Push Notifications
+            - generic [ref=f13e88]: Additional notification preferences are coming in future platform updates.
+          - generic [ref=f13e89]: Planned
+      - generic [ref=f13e90]:
+        - generic [ref=f13e91]:
+          - generic [ref=f13e92]: 📜
+          - heading "Legal & Terms" [level=2] [ref=f13e93]
+        - generic [ref=f13e94]:
+          - generic [ref=f13e95]:
+            - generic [ref=f13e96]: Terms of Service & Privacy Policy
+            - generic [ref=f13e97]: Review the platform guidelines and data protection policies.
+          - generic [ref=f13e98]:
+            - link "Terms" [ref=f13e99] [cursor=pointer]:
+              - /url: /terms
+            - link "Privacy" [ref=f13e100] [cursor=pointer]:
+              - /url: /privacy
+      - status [ref=f13e101]: Theme changed to Light Mode

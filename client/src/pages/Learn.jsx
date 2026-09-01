@@ -8,6 +8,8 @@ export default function Learn() {
   const navigate = useNavigate();
   const [myRequests, setMyRequests] = useState([]);
   const [myChats, setMyChats] = useState([]);
+  const [pageLoading, setPageLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [showDevtaModal, setShowDevtaModal] = useState(false);
@@ -23,9 +25,28 @@ export default function Learn() {
   const [enhancing, setEnhancing] = useState(false);
   const [toast, setToast] = useState('');
 
+  const fetchData = async () => {
+    setPageLoading(true);
+    setLoadError(null);
+    try {
+      const [reqRes, chatsRes] = await Promise.all([
+        getMyRequests(),
+        getChats(),
+      ]);
+      setMyRequests(reqRes.data || []);
+      setMyChats(chatsRes.data || []);
+    } catch (err) {
+      setLoadError(
+        err.response?.data?.message ||
+        'Unable to connect to the learning service. Please check your network and try again.'
+      );
+    } finally {
+      setPageLoading(false);
+    }
+  };
+
   useEffect(() => {
-    getMyRequests().then((r) => setMyRequests(r.data)).catch(() => setMyRequests([]));
-    getChats().then((r) => setMyChats(r.data)).catch(() => setMyChats([]));
+    fetchData();
   }, []);
 
   const showToast = (msg) => {
@@ -162,141 +183,173 @@ export default function Learn() {
           </div>
         </div>
 
-        {/* Active Learning Section */}
-        <div className="dashboard-section">
-          <div className="section-header">
-            <h2 className="section-title">Active Learning Sessions</h2>
-            <span className="badge badge-verified">{activeRequests.length} Active</span>
-          </div>
-
-          {activeRequests.length === 0 ? (
-            <div className="card" style={{ padding: 36, textAlign: 'center', color: 'var(--text-muted)' }}>
-              <p style={{ marginBottom: 16, fontSize: '1rem' }}>No active 1-on-1 learning sessions yet.</p>
-              <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}>
-                + Post Your First Learning Request
-              </button>
-            </div>
-          ) : (
-            <div className="grid-auto">
-              {activeRequests.map((req) => {
-                const linkedChat = myChats.find(
-                  (c) => c.request?._id === req._id || c.skill === req.skill
-                );
-                return (
-                  <div className="card card-3d" key={req._id}>
-                    <div className="card-body">
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                        <span className="badge badge-verified">✓ Teacher Assigned</span>
-                        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                          {new Date(req.createdAt).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: 8, color: 'var(--text-primary)' }}>
-                        {req.skill || req.question}
-                      </h3>
-                      <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: 16 }}>
-                        Teacher: <strong>{req.selectedTeacher?.name ?? 'Assigned Peer'}</strong>
-                      </p>
-                      {linkedChat && (
-                        <button
-                          className="btn btn-primary btn-sm"
-                          style={{ width: '100%' }}
-                          onClick={() => navigate(`/chat/${linkedChat._id}`)}
-                        >
-                          💬 Open Learning Chat
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* My Learning Requests List */}
-        <div className="dashboard-section">
-          <div className="section-header">
-            <h2 className="section-title">All My Learning Requests</h2>
-            <button className="btn btn-secondary btn-sm" onClick={() => navigate('/requests')}>
-              Manage in Requests Feed →
+        {/* API Error State Banner with Retry */}
+        {loadError && (
+          <div className="api-state-card api-error-card" role="alert" aria-live="assertive">
+            <div className="api-error-icon">⚠️</div>
+            <h2 className="api-error-title">Unable to Load Learning Data</h2>
+            <p className="api-error-desc">{loadError}</p>
+            <button type="button" className="btn btn-primary btn-sm" onClick={fetchData}>
+              🔄 Retry Connection
             </button>
           </div>
+        )}
 
-          {myRequests.length === 0 ? (
-            <div className="card" style={{ padding: 32, textAlign: 'center', color: 'var(--text-muted)' }}>
-              <p style={{ marginBottom: 16, fontSize: '1rem' }}>You haven&apos;t posted any learning requests yet.</p>
-              <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}>
-                + Post Your First Request
-              </button>
-            </div>
-          ) : filteredRequests.length === 0 ? (
-            <div className="card" style={{ padding: 32, textAlign: 'center', color: 'var(--text-muted)' }}>
-              No requests found matching &quot;{search}&quot;.
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {filteredRequests.map((req) => (
-                <div className="card card-3d request-card" key={req._id}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, flexWrap: 'wrap', gap: 8 }}>
-                    <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text-primary)' }}>
-                      &ldquo;{req.question}&rdquo;
-                    </div>
-                    <span className={`badge ${req.status === 'open' ? 'badge-pending' : 'badge-verified'}`}>
-                      {req.status === 'open' ? '⏳ Open for Teachers' : '✅ Active'}
-                    </span>
-                  </div>
+        {/* Loading Indicator */}
+        {pageLoading && (
+          <div className="card api-loading-card" role="status" aria-live="polite">
+            <div className="spinner" />
+            <span className="api-loading-text">Loading your learning sessions and requests…</span>
+          </div>
+        )}
 
-                  {req.skill && (
-                    <div style={{ fontSize: '0.88rem', color: 'var(--accent-indigo)', fontWeight: 600, marginBottom: 8 }}>
-                      Topic / Skill: {req.skill}
-                    </div>
-                  )}
+        {!pageLoading && !loadError && (
+          <>
+            {/* Active Learning Section */}
+            <div className="dashboard-section">
+              <div className="section-header">
+                <h2 className="section-title">Active Learning Sessions</h2>
+                <span className="badge badge-verified">{activeRequests.length} Active</span>
+              </div>
 
-                  <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)', marginBottom: 12 }}>
-                    {req.description || 'No extra notes provided.'}
+              {activeRequests.length === 0 ? (
+                <div className="card empty-state-card">
+                  <div className="empty-state-icon">📚</div>
+                  <div className="empty-state-title">No active learning sessions yet</div>
+                  <p className="empty-state-desc">
+                    Connect with a peer teacher to start a 1-on-1 collaborative learning session.
                   </p>
-
-                  {/* Quick accept teacher offers */}
-                  {req.teacherResponses?.length > 0 && req.status === 'open' && (
-                    <div style={{ background: 'var(--surface-inset)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: 14, marginBottom: 14 }}>
-                      <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
-                        👨‍🏫 {req.teacherResponses.length} Teacher{req.teacherResponses.length > 1 ? 's' : ''} Offered to Teach:
+                  <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}>
+                    + Post Your First Learning Request
+                  </button>
+                </div>
+              ) : (
+                <div className="grid-auto">
+                  {activeRequests.map((req) => {
+                    const linkedChat = myChats.find(
+                      (c) => c.request?._id === req._id || c.skill === req.skill
+                    );
+                    return (
+                      <div className="card card-3d" key={req._id}>
+                        <div className="card-body">
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                            <span className="badge badge-verified">✓ Teacher Assigned</span>
+                            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                              {new Date(req.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: 8, color: 'var(--text-primary)' }}>
+                            {req.skill || req.question}
+                          </h3>
+                          <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: 16 }}>
+                            Teacher: <strong>{req.selectedTeacher?.name ?? 'Assigned Peer'}</strong>
+                          </p>
+                          {linkedChat && (
+                            <button
+                              className="btn btn-primary btn-sm"
+                              style={{ width: '100%' }}
+                              onClick={() => navigate(`/chat/${linkedChat._id}`)}
+                            >
+                              💬 Open Learning Chat
+                            </button>
+                          )}
+                        </div>
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        {req.teacherResponses.map((item, idx) => {
-                          const teacherUser = item.teacher && typeof item.teacher === 'object' ? item.teacher : { _id: item.teacher };
-                          const teacherId = teacherUser._id || item.teacher || item._id;
-                          const teacherName = teacherUser.name || 'Peer Teacher';
-                          return (
-                            <div key={item._id || idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--surface)', padding: '8px 12px', borderRadius: 'var(--radius-sm)' }}>
-                              <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{teacherName}</span>
-                              <button
-                                className="btn btn-primary btn-sm"
-                                onClick={() => handleSelectTeacher(req._id, teacherId)}
-                              >
-                                ✓ Accept &amp; Start Chat
-                              </button>
-                            </div>
-                          );
-                        })}
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* My Learning Requests List */}
+            <div className="dashboard-section">
+              <div className="section-header">
+                <h2 className="section-title">All My Learning Requests</h2>
+                <button className="btn btn-secondary btn-sm" onClick={() => navigate('/requests')}>
+                  Manage in Requests Feed →
+                </button>
+              </div>
+
+              {myRequests.length === 0 ? (
+                <div className="card empty-state-card">
+                  <div className="empty-state-icon">📝</div>
+                  <div className="empty-state-title">You haven&apos;t posted any learning requests yet</div>
+                  <p className="empty-state-desc">
+                    Ask questions on topics you want to master and get guidance from verified peers.
+                  </p>
+                  <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}>
+                    + Post Your First Request
+                  </button>
+                </div>
+              ) : filteredRequests.length === 0 ? (
+                <div className="card" style={{ padding: 32, textAlign: 'center', color: 'var(--text-muted)' }}>
+                  No requests found matching &quot;{search}&quot;.
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  {filteredRequests.map((req) => (
+                    <div className="card card-3d request-card" key={req._id}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, flexWrap: 'wrap', gap: 8 }}>
+                        <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text-primary)' }}>
+                          &ldquo;{req.question}&rdquo;
+                        </div>
+                        <span className={`badge ${req.status === 'open' ? 'badge-pending' : 'badge-verified'}`}>
+                          {req.status === 'open' ? '⏳ Open for Teachers' : '✅ Active'}
+                        </span>
+                      </div>
+
+                      {req.skill && (
+                        <div style={{ fontSize: '0.88rem', color: 'var(--accent-indigo)', fontWeight: 600, marginBottom: 8 }}>
+                          Topic / Skill: {req.skill}
+                        </div>
+                      )}
+
+                      <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)', marginBottom: 12 }}>
+                        {req.description || 'No extra notes provided.'}
+                      </p>
+
+                      {/* Quick accept teacher offers */}
+                      {req.teacherResponses?.length > 0 && req.status === 'open' && (
+                        <div style={{ background: 'var(--surface-inset)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', padding: 14, marginBottom: 14 }}>
+                          <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
+                            👨‍🏫 {req.teacherResponses.length} Teacher{req.teacherResponses.length > 1 ? 's' : ''} Offered to Teach:
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                            {req.teacherResponses.map((item, idx) => {
+                              const teacherUser = item.teacher && typeof item.teacher === 'object' ? item.teacher : { _id: item.teacher };
+                              const teacherId = teacherUser._id || item.teacher || item._id;
+                              const teacherName = teacherUser.name || 'Peer Teacher';
+                              return (
+                                <div key={item._id || idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--surface)', padding: '8px 12px', borderRadius: 'var(--radius-sm)' }}>
+                                  <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{teacherName}</span>
+                                  <button
+                                    className="btn btn-primary btn-sm"
+                                    onClick={() => handleSelectTeacher(req._id, teacherId)}
+                                  >
+                                    ✓ Accept &amp; Start Chat
+                                  </button>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+                        <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                          {req.teacherResponses?.length || 0} teacher offer(s) received
+                        </span>
+                        <button className="btn btn-secondary btn-sm" onClick={() => navigate('/requests')}>
+                          View Details &amp; Offers →
+                        </button>
                       </div>
                     </div>
-                  )}
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
-                    <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                      {req.teacherResponses?.length || 0} teacher offer(s) received
-                    </span>
-                    <button className="btn btn-secondary btn-sm" onClick={() => navigate('/requests')}>
-                      View Details &amp; Offers →
-                    </button>
-                  </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
-          )}
-        </div>
+          </>
+        )}
 
         {/* ── Modal: Create Learning Request ── */}
         <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Create Learning Request 📝">

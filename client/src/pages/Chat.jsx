@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { getChat, sendMessage as apiSendMessage, completeChat } from '../api';
@@ -12,10 +12,35 @@ export default function Chat() {
   const navigate  = useNavigate();
   const { user }  = useAuth();
   const [chat, setChat]             = useState(null);
+  const [loading, setLoading]       = useState(true);
+  const [loadError, setLoadError]   = useState(null);
   const [input, setInput]           = useState('');
   const [sending, setSending]       = useState(false);
+  const [sendError, setSendError]   = useState('');
   const [completing, setCompleting] = useState(false);
   const messagesEndRef = useRef(null);
+
+  const fetchChat = useCallback(async () => {
+    setLoading(true);
+    setLoadError(null);
+    try {
+      const { data } = await getChat(id);
+      setChat(data);
+    } catch (err) {
+      if (err.response?.status === 404) {
+        setLoadError('Learning chat session not found or has been removed.');
+      } else if (err.response?.status === 403) {
+        setLoadError('You do not have permission to access this chat session.');
+      } else {
+        setLoadError(
+          err.response?.data?.message ||
+          'Unable to load the chat room. Please check your connection and try again.'
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
 
   // ── Socket.IO setup ──
   useEffect(() => {
@@ -41,10 +66,8 @@ export default function Chat() {
 
   // ── Load initial chat ──
   useEffect(() => {
-    getChat(id)
-      .then((r) => setChat(r.data))
-      .catch(() => navigate('/learn'));
-  }, [id, navigate]);
+    fetchChat();
+  }, [fetchChat]);
 
   // ── Auto-scroll ──
   useEffect(() => {
@@ -71,12 +94,15 @@ export default function Chat() {
     const text = input.trim();
     if (!text || sending || isCompleted) return;
     setSending(true);
+    setSendError('');
     setInput('');
     try {
       const { data } = await apiSendMessage(id, text);
       setChat(data);
-    } catch {
+    } catch (err) {
       setInput(text);
+      setSendError(err.response?.data?.message || 'Failed to send message. Please retry.');
+      setTimeout(() => setSendError(''), 4000);
     } finally {
       setSending(false);
     }
@@ -105,10 +131,33 @@ export default function Chat() {
   const formatTime = (date) =>
     new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  if (!chat) {
+  if (loadError) {
+    return (
+      <div className="page-body page-enter" style={{ padding: '60px 20px', maxWidth: 560, margin: '0 auto' }}>
+        <div className="api-state-card api-error-card" role="alert" aria-live="assertive">
+          <div className="api-error-icon">⚠️</div>
+          <h2 className="api-error-title">Chat Session Error</h2>
+          <p className="api-error-desc">{loadError}</p>
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+            <button type="button" className="btn btn-primary btn-sm" onClick={fetchChat}>
+              🔄 Retry Connection
+            </button>
+            <button type="button" className="btn btn-secondary btn-sm" onClick={() => navigate('/learn')}>
+              ← Back to Learn
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading || !chat) {
     return (
       <div className="page-body" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <div className="spinner" />
+        <div className="card api-loading-card" role="status" aria-live="polite">
+          <div className="spinner" />
+          <span className="api-loading-text">Connecting to learning chat room…</span>
+        </div>
       </div>
     );
   }
@@ -244,41 +293,48 @@ export default function Chat() {
             🔒 Session completed — messaging is closed.
           </div>
         ) : (
-          <form
-            className="chat-input-bar"
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSend();
-            }}
-          >
-            <textarea
-              id="chat-message-input"
-              className="chat-input-field"
-              placeholder="Type a message… (Enter to send, Shift+Enter for new line)"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              disabled={sending}
-              rows={1}
-              aria-label="Type a message"
-              aria-describedby="chat-message-help"
-              style={{ resize: 'none', overflowY: 'hidden', lineHeight: '1.5' }}
-              onInput={(e) => {
-                e.target.style.height = 'auto';
-                e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+          <div>
+            {sendError && (
+              <div className="neo-error-badge" style={{ margin: '8px 16px', fontSize: '0.85rem' }} role="alert" aria-live="assertive">
+                {sendError}
+              </div>
+            )}
+            <form
+              className="chat-input-bar"
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSend();
               }}
-            />
-            <span id="chat-message-help" className="sr-only">Press Enter to send and Shift plus Enter for a new line.</span>
-            <button
-              type="submit"
-              className="chat-send-btn"
-              disabled={!input.trim() || sending}
-              title="Send message"
-              aria-label="Send message"
             >
-              {sending ? '…' : '➤'}
-            </button>
-          </form>
+              <textarea
+                id="chat-message-input"
+                className="chat-input-field"
+                placeholder="Type a message… (Enter to send, Shift+Enter for new line)"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={sending}
+                rows={1}
+                aria-label="Type a message"
+                aria-describedby="chat-message-help"
+                style={{ resize: 'none', overflowY: 'hidden', lineHeight: '1.5' }}
+                onInput={(e) => {
+                  e.target.style.height = 'auto';
+                  e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+                }}
+              />
+              <span id="chat-message-help" className="sr-only">Press Enter to send and Shift plus Enter for a new line.</span>
+              <button
+                type="submit"
+                className="chat-send-btn"
+                disabled={!input.trim() || sending}
+                title="Send message"
+                aria-label="Send message"
+              >
+                {sending ? '…' : '➤'}
+              </button>
+            </form>
+          </div>
         )}
       </div>
     </div>

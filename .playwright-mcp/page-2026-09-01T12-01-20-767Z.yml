@@ -1,0 +1,79 @@
+- main [ref=f12e3]:
+  - navigation "Authentication navigation" [ref=f12e4]:
+    - link "Back to home page" [ref=f12e5] [cursor=pointer]:
+      - /url: /
+      - generic [aria-hidden] [ref=f12e6]: TL&E
+      - generic [ref=f12e7]: Back to Home
+  - main [ref=f12e8]:
+    - heading "Terms of Service" [level=1] [ref=f12e9]
+    - paragraph [ref=f12e10]: "Version 1.0 · Last updated: September 2026[TODO: OWNER REVIEW] Update the effective date before production launch."
+    - region [ref=f12e11]:
+      - heading "1. Acceptance of Terms" [level=2] [ref=f12e12]
+      - paragraph [ref=f12e13]:
+        - text: By accessing or using
+        - strong [ref=f12e14]: Teach, Learn & Earn
+        - text: ("the Platform", "we", "us", or "our"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, please do not use the Platform.
+      - paragraph [ref=f12e15]: We may update these Terms from time to time. Continued use of the Platform after changes constitutes acceptance of the revised Terms. We will notify registered users of material changes via email or an in-app notification.
+      - generic [ref=f12e16]: "[TODO: OWNER REVIEW] Specify the operator name, legal entity, and registered address."
+    - region [ref=f12e17]:
+      - heading "2. Description of Service" [level=2] [ref=f12e18]
+      - paragraph [ref=f12e19]: Teach, Learn & Earn is a peer-to-peer skill exchange platform that connects individuals who want to teach skills they possess with individuals who want to learn those skills. Users may post skill offerings, make learning requests, engage in real-time chat, and track their learning progress.
+      - paragraph [ref=f12e20]: The Platform may integrate with third-party AI services to provide learning assistance. Responses from AI features are for informational purposes only and should not be treated as professional advice.
+    - region [ref=f12e21]:
+      - heading "3. User Accounts" [level=2] [ref=f12e22]
+      - paragraph [ref=f12e23]: "To access most features, you must register for an account. You agree to:"
+      - list [ref=f12e24]:
+        - listitem [ref=f12e25]: Provide accurate, current, and complete information during registration.
+        - listitem [ref=f12e26]: Maintain and promptly update your account information.
+        - listitem [ref=f12e27]: Keep your password confidential and not share access with others.
+        - listitem [ref=f12e28]: Notify us immediately of any unauthorised use of your account.
+        - listitem [ref=f12e29]: Be at least 13 years of age (or the minimum age of digital consent in your jurisdiction).
+      - generic [ref=f12e30]: "[TODO: OWNER REVIEW] Confirm minimum age requirement for your jurisdiction."
+    - region [ref=f12e31]:
+      - heading "4. Acceptable Use" [level=2] [ref=f12e32]
+      - paragraph [ref=f12e33]: "You agree not to:"
+      - list [ref=f12e34]:
+        - listitem [ref=f12e35]: Use the Platform for any unlawful purpose or in violation of any applicable laws.
+        - listitem [ref=f12e36]: Post or transmit content that is harmful, offensive, harassing, defamatory, or violates the rights of third parties.
+        - listitem [ref=f12e37]: Attempt to gain unauthorised access to any part of the Platform or its systems.
+        - listitem [ref=f12e38]: Scrape, harvest, or collect data from the Platform without express written permission.
+        - listitem [ref=f12e39]: Distribute malware, spam, or other malicious content.
+        - listitem [ref=f12e40]: Impersonate another person or entity.
+    - region [ref=f12e41]:
+      - heading "5. Intellectual Property" [level=2] [ref=f12e42]
+      - paragraph [ref=f12e43]: The Platform and its original content (excluding user-generated content) are the exclusive property of the Platform operator and are protected by applicable intellectual property laws.
+      - paragraph [ref=f12e44]: By posting content on the Platform, you grant us a non-exclusive, royalty-free, worldwide licence to display, distribute, and promote that content in connection with operating the Platform. You retain ownership of your content.
+      - generic [ref=f12e45]: "[TODO: OWNER REVIEW] Confirm the licence scope and whether you wish to include sub-licensing rights."
+    - region [ref=f12e46]:
+      - heading "6. Privacy" [level=2] [ref=f12e47]
+      - paragraph [ref=f12e48]:
+        - text: Your use of the Platform is also governed by our
+        - link "Privacy Policy" [ref=f12e49] [cursor=pointer]:
+          - /url: /privacy
+        - text: ", which is incorporated into these Terms by reference."
+    - region [ref=f12e50]:
+      - heading "7. Disclaimers & Limitation of Liability" [level=2] [ref=f12e51]
+      - paragraph [ref=f12e52]: The Platform is provided on an "as is" and "as available" basis without warranties of any kind, either express or implied, including but not limited to fitness for a particular purpose or non-infringement.
+      - paragraph [ref=f12e53]: To the fullest extent permitted by law, we shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising out of or related to your use of the Platform.
+      - generic [ref=f12e54]: "[TODO: OWNER REVIEW] Review limitation of liability language with a qualified attorney for your jurisdiction."
+    - region [ref=f12e55]:
+      - heading "8. Termination" [level=2] [ref=f12e56]
+      - paragraph [ref=f12e57]: We reserve the right to suspend or terminate your account and access to the Platform at our sole discretion, without notice, for conduct that we believe violates these Terms or is harmful to other users, the Platform, or third parties.
+      - paragraph [ref=f12e58]: You may delete your account at any time by contacting us. Upon deletion, your personal data will be handled in accordance with our Privacy Policy.
+    - region [ref=f12e59]:
+      - heading "9. Governing Law & Disputes" [level=2] [ref=f12e60]
+      - generic [ref=f12e61]: "[TODO: OWNER REVIEW] Specify governing law jurisdiction, venue for disputes, and whether you wish to include an arbitration clause."
+      - paragraph [ref=f12e62]: Any disputes arising under these Terms shall be governed by and construed in accordance with the applicable laws of the jurisdiction in which the Platform operator is registered.
+    - region [ref=f12e63]:
+      - heading "10. Contact" [level=2] [ref=f12e64]
+      - paragraph [ref=f12e65]: "If you have questions about these Terms, please contact us at:"
+      - generic [ref=f12e66]: "[TODO: OWNER REVIEW] Add contact email, mailing address, and any designated legal contact details."
+    - navigation "Legal page navigation" [ref=f12e67]:
+      - link "Privacy Policy" [ref=f12e68] [cursor=pointer]:
+        - /url: /privacy
+      - link "← Back to Sign Up" [ref=f12e69] [cursor=pointer]:
+        - /url: /signup
+      - link "Sign In" [ref=f12e70] [cursor=pointer]:
+        - /url: /login
+      - link "Home" [ref=f12e71] [cursor=pointer]:
+        - /url: /

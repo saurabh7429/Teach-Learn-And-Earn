@@ -16,6 +16,7 @@ import Requests from './pages/Requests';
 import Progress from './pages/Progress';
 import Chat from './pages/Chat';
 import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -68,6 +69,7 @@ function AppRoutes() {
           <Route path="/progress" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
           <Route path="/chat/:id" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
           
           {/* Catch-all redirect to Home */}
           <Route path="*" element={<Navigate to="/" replace />} />

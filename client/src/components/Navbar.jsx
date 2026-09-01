@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getMyRequests } from '../api';
 
 export default function Navbar({ onOpenAI }) {
   const { user } = useAuth();
@@ -8,6 +9,7 @@ export default function Navbar({ onOpenAI }) {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState(() => localStorage.getItem('tle_theme') || 'dark');
+  const [unreadNotifCount, setUnreadNotifCount] = useState(0);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -18,6 +20,25 @@ export default function Navbar({ onOpenAI }) {
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location.pathname]);
+
+  // Fetch real notification / pending offers count when logged in
+  useEffect(() => {
+    if (user) {
+      getMyRequests()
+        .then((res) => {
+          const requests = res.data || [];
+          const pendingOffers = requests.filter(
+            (r) => r.status === 'open' && r.teacherResponses && r.teacherResponses.length > 0
+          ).length;
+          setUnreadNotifCount(pendingOffers);
+        })
+        .catch(() => {
+          setUnreadNotifCount(0);
+        });
+    } else {
+      setUnreadNotifCount(0);
+    }
+  }, [user, location.pathname]);
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
@@ -42,6 +63,7 @@ export default function Navbar({ onOpenAI }) {
     ...(user ? [
       { to: '/progress', label: 'Progress' },
       { to: '/requests', label: 'Requests' },
+      { to: '/settings', label: 'Settings' },
     ] : []),
   ];
 
@@ -94,12 +116,14 @@ export default function Navbar({ onOpenAI }) {
             <>
               <button 
                 className="notif-btn" 
-                title="Notifications"
+                title={unreadNotifCount > 0 ? `${unreadNotifCount} pending offer${unreadNotifCount > 1 ? 's' : ''}` : 'Notifications'}
                 onClick={() => navigate('/requests')}
-                aria-label="View notifications"
+                aria-label={unreadNotifCount > 0 ? `View notifications (${unreadNotifCount} pending offers)` : 'View notifications'}
               >
                 🔔
-                <span className="notif-badge">3</span>
+                {unreadNotifCount > 0 && (
+                  <span className="notif-badge">{unreadNotifCount}</span>
+                )}
               </button>
               <button
                 type="button"
